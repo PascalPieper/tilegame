@@ -10,22 +10,22 @@ namespace TileGame.Tiles
     public class StartTile : Tile, ITraversable, IOccupied
     {
         public IOccupyTile OccupyingEntity { get; }
+
         public void OnEnter()
         {
-            
+
             if (OccupyingEntity.GetType() == typeof(Char))
             {
                 Behavior.TraverseEffect(OccupyingEntity as Char);
             }
-            
+
         }
 
         public void OnExit()
         {
         }
 
-
-        public StartTile(string name, RectangleShape tileRect, Vector<uint> currentMapPosition, AdjacentTiles adjacentTiles, CharacterEffectBehavior behavior) : base(name, tileRect, currentMapPosition, adjacentTiles, behavior)
+        public StartTile(string name, CharacterEffectBehavior behavior) : base(name, behavior)
         {
         }
     }

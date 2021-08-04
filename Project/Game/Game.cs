@@ -24,7 +24,6 @@ namespace TileGame.Game
         private void Draw()
         {
             throw new System.NotImplementedException();
-
         }
 
         private void Update()

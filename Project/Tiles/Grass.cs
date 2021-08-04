@@ -15,17 +15,11 @@ namespace TileGame.Tiles
 
         public void OnExit()
         {
-            throw new NotImplementedException();
         }
 
-        public Grass()
+        public Grass(string name, CharacterEffectBehavior behavior) : base(name, behavior)
         {
-        }
-
-        public Grass(string name, RectangleShape tileRect, Vector<uint> currentMapPosition, AdjacentTiles adjacentTiles,
-            CharacterEffectBehavior behavior) : base(name, tileRect, currentMapPosition, adjacentTiles, behavior)
-        {
-            TileRect.FillColor = Color.Green;
+            this.TileRect.FillColor = Color.Green;
         }
     }
 }

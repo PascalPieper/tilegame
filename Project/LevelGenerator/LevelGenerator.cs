@@ -33,7 +33,7 @@ namespace Project.LevelGenerator
             {
                 for (var j = 0; j < MapSize.Y; j++)
                 {
-                    var temp = factory.GetInstance("Grass");
+                    var temp = new Grass("Grass", null);
                     temp.TileRect.Position = new Vector2f(i, j);
                     temp.TileRect.Size = TileSize;
                     AddToGameManager(temp.TileRect, temp);

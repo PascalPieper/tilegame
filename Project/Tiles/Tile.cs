@@ -15,13 +15,10 @@ namespace TileGame.Tiles
 
     public abstract class Tile : ITick
     {
-        public Tile(){}
-        protected Tile(string name, RectangleShape tileRect, Vector<uint> currentMapPosition, AdjacentTiles adjacentTiles, CharacterEffectBehavior behavior)
+        protected Tile(string name, CharacterEffectBehavior behavior)
         {
             Name = name;
-            TileRect = tileRect;
-            CurrentMapPosition = currentMapPosition;
-            AdjacentTiles = adjacentTiles;
+            TileRect = new RectangleShape();
             Behavior = behavior;
         }
 
