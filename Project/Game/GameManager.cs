@@ -18,11 +18,10 @@ namespace TileGame.Game
 
         public void Tick()
         {
-
-                for (int i = Entities.Count ; i > 0; i--)
-                {
-                    Entities[i-1].Tick();
-                }
+            for (int i = Entities.Count; i > 0; i--)
+            {
+                Entities[i - 1].Tick();
+            }
         }
 
         public void Draw(RenderWindow window)
@@ -37,6 +36,18 @@ namespace TileGame.Game
         {
             Entities.Add(tickingGo);
             Drawables.Add(drawableGo);
+        }
+
+        public void UnloadAllGameObjects()
+        {
+            for (int i = Entities.Count; i > 0; i--)
+            {
+                Entities.Remove(Entities[i - 1]);
+            }
+            for (int i = Drawables.Count ; i > 0; i--)
+            {
+                Drawables.Remove(Drawables[i - 1]);
+            }
         }
     }
 }

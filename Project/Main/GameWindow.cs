@@ -1,8 +1,11 @@
 ﻿using ImGuiNET;
+using Project.Level;
+using Project.Tiles;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
+using TileGame.Tiles;
 
 namespace Project.Main
 {
@@ -20,12 +23,13 @@ namespace Project.Main
         public void Run()
         {
             var gm = new GameManager();
-            LevelGenerator.LevelGenerator generator = new LevelGenerator.LevelGenerator(gm, new Vector2u(25,25), new Vector2f(4,4));
-            generator.Generate();
+
+            
             deltaTimeClock.Restart();
             var mode = new SFML.Window.VideoMode(1920, 1080);
             View view1 = new View(new FloatRect(0, 0, 256, 144));
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
+            window.SetFramerateLimit(60);
             window.KeyPressed += this.Window_KeyPressed;
             GuiImpl.Init(window);
             // Start the game loop
@@ -37,7 +41,13 @@ namespace Project.Main
                 {
                     if (ImGui.Button("Load Exercise 1"))
                     {
-                        
+                        string[] allowedTiles = new[] { "Grass" };
+                        string[] allowedBlockers = new[] { "Mountains" };
+                        TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(25, 25),
+                            new Vector2f(4, 4));
+                        Level.LevelGenerator generator = new Level.LevelGenerator(gm);
+                        generator.Generate(levelTemplate);
                     }
                     if (ImGui.Button("Load Exercise 2"))
                     {
@@ -54,7 +64,8 @@ namespace Project.Main
                     if (ImGui.Button("Load Exercise 5"))
                     {
                     }
-
+                    
+                    
                     if (ImGui.Button("Close Game"))
                     {
                         window.Close();
