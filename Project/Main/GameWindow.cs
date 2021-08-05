@@ -18,14 +18,13 @@ namespace Project.Main
         {
             this.deltaTimeClock = new Clock();
             this.DeltaTime = new Time();
-
         }
+
         public void Run()
         {
             var gm = new GameManager();
+            var activeLevel = new Level.Level(gm);
 
-            
-            deltaTimeClock.Restart();
             var mode = new SFML.Window.VideoMode(1920, 1080);
             View view1 = new View(new FloatRect(0, 0, 256, 144));
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
@@ -35,8 +34,11 @@ namespace Project.Main
             // Start the game loop
             while (window.IsOpen)
             {
-                GuiImpl.Update(window, this.DeltaTime);
                 DeltaTime = this.deltaTimeClock.Restart();
+                GuiImpl.Update(window, this.DeltaTime);
+                
+                #region ImGui Interface
+
                 if (ImGui.Begin("Stats"))
                 {
                     if (ImGui.Button("Load Exercise 1"))
@@ -46,67 +48,76 @@ namespace Project.Main
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
                         LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(25, 25),
                             new Vector2f(4, 4));
-                        Level.LevelGenerator generator = new Level.LevelGenerator(gm);
+                        LevelGenerator generator = new LevelGenerator(gm);
                         generator.Generate(levelTemplate);
                     }
+
                     if (ImGui.Button("Load Exercise 2"))
                     {
                     }
+
                     if (ImGui.Button("Load Exercise 3"))
                     {
                     }
+
                     if (ImGui.Button("Load Exercise 4"))
                     {
                     }
+
                     if (ImGui.Button("Load Exercise 5"))
                     {
                     }
+
                     if (ImGui.Button("Load Exercise 5"))
                     {
                     }
-                    
-                    
+
                     if (ImGui.Button("Close Game"))
                     {
                         window.Close();
                     }
+
                     ImGui.End();
                 }
+
                 if (ImGui.Begin("Camera"))
                 {
                     if (ImGui.Button("Increase Zoom"))
                     {
-                        view1.Size = new Vector2f(view1.Size.X + 55,view1.Size.Y + 55);
+                        view1.Size = new Vector2f(view1.Size.X + 55, view1.Size.Y + 55);
                     }
+
                     if (ImGui.Button("Decrease Zoom"))
                     {
-                        view1.Size = new Vector2f(view1.Size.X - 55,view1.Size.Y - 55);
+                        view1.Size = new Vector2f(view1.Size.X - 55, view1.Size.Y - 55);
                     }
+
                     if (ImGui.Button("Center Camera"))
                     {
-                        view1.Size = new Vector2f(1000,1000);
+                        view1.Size = new Vector2f(1000, 1000);
                     }
+
                     if (ImGui.Button("Load Exercise 4"))
                     {
                     }
+
                     ImGui.End();
                 }
-                
+
+                #endregion
+
                 // Process events
                 window.SetView(view1);
                 window.DispatchEvents();
                 gm.Draw(window);
                 GuiImpl.Render();
-                
-                
                 window.Display();
                 window.Clear();
+
+                deltaTimeClock.Restart();
             }
         }
-
-        /// <summary>
-        /// Function called when a key is pressed
-        /// </summary>
+        
         private void Window_KeyPressed(object sender, SFML.Window.KeyEventArgs e)
         {
             var window = (SFML.Window.Window)sender;
