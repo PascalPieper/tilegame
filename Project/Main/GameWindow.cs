@@ -22,15 +22,20 @@ namespace Project.Main
 
         public void Run()
         {
-            var gm = new GameManager();
-            var activeLevel = new Level.Level(gm);
-
+            //Window Settings
             var mode = new SFML.Window.VideoMode(1920, 1080);
             View view1 = new View(new FloatRect(0, 0, 256, 144));
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
             window.SetFramerateLimit(60);
+            
+            //Setup for Input
             window.KeyPressed += this.Window_KeyPressed;
             GuiImpl.Init(window);
+            
+            //Instantiation of crucial Managers
+            var gameManager = new GameManager();
+            var activeLevel = new Level.Level(gameManager);
+            
             // Start the game loop
             while (window.IsOpen)
             {
@@ -39,21 +44,24 @@ namespace Project.Main
                 
                 #region ImGui Interface
 
-                if (ImGui.Begin("Stats"))
+                if (ImGui.Begin("Level Selection"))
                 {
                     if (ImGui.Button("Load Exercise 1"))
                     {
+                        activeLevel.UnloadLevel();
+                        LevelGenerator generator = new LevelGenerator(gameManager);
+                        
                         string[] allowedTiles = new[] { "Grass" };
                         string[] allowedBlockers = new[] { "Mountains" };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
                         LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(25, 25),
                             new Vector2f(4, 4));
-                        LevelGenerator generator = new LevelGenerator(gm);
-                        generator.Generate(levelTemplate);
+                        activeLevel = generator.Generate(levelTemplate);
                     }
 
                     if (ImGui.Button("Load Exercise 2"))
                     {
+                        activeLevel.UnloadLevel();
                     }
 
                     if (ImGui.Button("Load Exercise 3"))
@@ -109,7 +117,7 @@ namespace Project.Main
                 // Process events
                 window.SetView(view1);
                 window.DispatchEvents();
-                gm.Draw(window);
+                gameManager.Draw(window);
                 GuiImpl.Render();
                 window.Display();
                 window.Clear();
