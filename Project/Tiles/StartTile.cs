@@ -1,9 +1,6 @@
-﻿using System;
-using System.Numerics;
-using Project.Tiles.Behavior;
+﻿using Project.Tiles.Behavior;
 using SFML.Graphics;
 using TileGame.Interfaces;
-using Char = TileGame.Character.Char;
 
 namespace TileGame.Tiles
 {
@@ -13,11 +10,7 @@ namespace TileGame.Tiles
 
         public void OnEnter()
         {
-
-            if (OccupyingEntity.GetType() == typeof(Char))
-            {
-                Behavior.TraverseEffect(OccupyingEntity as Char);
-            }
+            
 
         }
 
@@ -25,7 +18,7 @@ namespace TileGame.Tiles
         {
         }
 
-        public StartTile(string name, CharacterEffectBehavior behavior) : base(name, behavior)
+        public StartTile()
         {
         }
     }

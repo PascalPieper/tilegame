@@ -18,10 +18,11 @@ namespace TileGame.Game
 
         public void Tick()
         {
-            foreach (var entity in this.Entities)
-            {
-                entity.Tick();
-            }
+
+                for (int i = Entities.Count ; i > 0; i--)
+                {
+                    Entities[i-1].Tick();
+                }
         }
 
         public void Draw(RenderWindow window)
@@ -30,6 +31,12 @@ namespace TileGame.Game
             {
                 window.Draw(entity);
             }
+        }
+
+        public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo)
+        {
+            Entities.Add(tickingGo);
+            Drawables.Add(drawableGo);
         }
     }
 }

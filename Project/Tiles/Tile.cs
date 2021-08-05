@@ -15,11 +15,19 @@ namespace TileGame.Tiles
 
     public abstract class Tile : ITick
     {
-        protected Tile(string name, CharacterEffectBehavior behavior)
+        protected Tile(string name, CharacterEffectBehavior behavior, Color rectColor)
         {
             Name = name;
             TileRect = new RectangleShape();
             Behavior = behavior;
+            TileRect.FillColor = rectColor;
+        }
+
+        protected Tile()
+        {
+            Name = "Default Tile";
+            TileRect = new RectangleShape();
+            Behavior = null;
         }
 
         public string Name { get; protected set; }

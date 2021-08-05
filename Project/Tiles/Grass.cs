@@ -17,9 +17,10 @@ namespace TileGame.Tiles
         {
         }
 
-        public Grass(string name, CharacterEffectBehavior behavior) : base(name, behavior)
+        public Grass()
         {
             this.TileRect.FillColor = Color.Green;
         }
+        
     }
 }

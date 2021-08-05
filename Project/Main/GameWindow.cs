@@ -15,23 +15,19 @@ namespace Project.Main
         {
             this.deltaTimeClock = new Clock();
             this.DeltaTime = new Time();
+
         }
         public void Run()
         {
             var gm = new GameManager();
-            LevelGenerator.LevelGenerator generator = new LevelGenerator.LevelGenerator(gm, new Vector2u(128,55), new Vector2f(1,1));
+            LevelGenerator.LevelGenerator generator = new LevelGenerator.LevelGenerator(gm, new Vector2u(25,25), new Vector2f(4,4));
             generator.Generate();
             deltaTimeClock.Restart();
             var mode = new SFML.Window.VideoMode(1920, 1080);
-            View view1 = new View(new FloatRect(0, 0, 32, 18));
+            View view1 = new View(new FloatRect(0, 0, 256, 144));
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
             window.KeyPressed += this.Window_KeyPressed;
             GuiImpl.Init(window);
-            var circle = new SFML.Graphics.CircleShape(100f)
-            {
-                FillColor = SFML.Graphics.Color.Blue
-            };
-
             // Start the game loop
             while (window.IsOpen)
             {
@@ -65,7 +61,25 @@ namespace Project.Main
                     }
                     ImGui.End();
                 }
-                
+                if (ImGui.Begin("Camera"))
+                {
+                    if (ImGui.Button("Increase Zoom"))
+                    {
+                        view1.Size = new Vector2f(view1.Size.X + 55,view1.Size.Y + 55);
+                    }
+                    if (ImGui.Button("Decrease Zoom"))
+                    {
+                        view1.Size = new Vector2f(view1.Size.X - 55,view1.Size.Y - 55);
+                    }
+                    if (ImGui.Button("Center Camera"))
+                    {
+                        view1.Size = new Vector2f(1000,1000);
+                    }
+                    if (ImGui.Button("Load Exercise 4"))
+                    {
+                    }
+                    ImGui.End();
+                }
                 
                 // Process events
                 window.SetView(view1);
