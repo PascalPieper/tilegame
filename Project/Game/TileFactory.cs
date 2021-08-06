@@ -1,9 +1,10 @@
 ﻿using System;
+using TileGame.Game;
 using TileGame.Tiles;
 
-namespace TileGame.Game
+namespace Project.Game
 {
-    class TileFactory : ReflectFactory<Tile>
+    internal class TileFactory : ReflectFactory<Tile>
     {
         public GameManager gameManager;
 

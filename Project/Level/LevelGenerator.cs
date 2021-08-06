@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Project.Game;
+using Project.Utility.Random;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
@@ -35,29 +37,59 @@ namespace Project.Level
                 {
                     var xPos = i;
                     var yPos = j;
-                    _levelGenerationQueue.Enqueue(() =>
+                    var result = RandomGenerator.RandomNumber(0, 1);
+                    if (result == 0)
                     {
-                        level.TileMatrix[xPos, yPos] = CreateTile(factory, "asjdoik", template, xPos, yPos);
-                    });
+                        _levelGenerationQueue.Enqueue(() =>
+                        {
+                            level.TileMatrix[xPos, yPos] =
+                                CreateTile(factory, nameof(StartTile), template, xPos, yPos);
+                        });
+                    }
+                    else
+                    {
+                        _levelGenerationQueue.Enqueue(() =>
+                        {
+                            level.TileMatrix[xPos, yPos] = CreateTile(factory, nameof(Grass), template, xPos, yPos);
+                        });
+                        
+                    }
+
+ 
                 }
             }
 
             return level;
         }
 
-        private static Tile CreateTile(TileFactory factory, string tileName, LevelTemplate template, uint xPos, uint yPos)
+        private void CreateSpawnPosition()
         {
-            var tile = factory.CreateTile(nameof(tileName));
+        }
+
+        private static Tile CreateTile(TileFactory factory, string tileName, LevelTemplate template, uint xPos,
+            uint yPos)
+        {
+            var tile = factory.CreateTile(tileName);
             tile.TileRect.Position = new Vector2f(xPos * template.TileSize.X, yPos * template.TileSize.Y);
             tile.TileRect.Size = template.TileSize;
 
             return tile;
         }
 
+        public void PlaceSpawnTile()
+        {
+            
+        }
+
+        public void PlaceMapBarriers()
+        {
+            
+        }
+
         public void Tick()
         {
-            var task = _levelGenerationQueue.Dequeue();
-            task.Invoke();
+            _levelGenerationQueue.TryDequeue(out var task);
+            task?.Invoke();
         }
     }
 }

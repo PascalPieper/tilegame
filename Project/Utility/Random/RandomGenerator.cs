@@ -5,18 +5,19 @@ namespace Project.Utility.Random
 {
     public static class RandomGenerator
     {
-        public static float RandomNumber(float minRange, float maxRange)
-        {
-            var rand = new System.Random(Guid.NewGuid().GetHashCode());
-            var val = (float)(rand.NextDouble() * (maxRange - minRange) + minRange);
-            return val;
-        }
+        private static readonly System.Random Random = new System.Random(); 
+        private static readonly object SyncLock = new object(); 
+        // public static float RandomNumber(float minRange, float maxRange)
+        // {
+        //     var rand = new System.Random(Guid.NewGuid().GetHashCode());
+        //     var val = (float)(rand.NextDouble() * (maxRange - minRange) + minRange);
+        //     return val;
+        // }
         
         public static int RandomNumber(int minRange, int maxRange)
         {
-            var rand = new System.Random(Guid.NewGuid().GetHashCode());
-            var val = rand.Next(minRange, maxRange);
-            return val;
+            lock (SyncLock);
+            return Random.Next(minRange, maxRange +1 );
         }
     }
 }

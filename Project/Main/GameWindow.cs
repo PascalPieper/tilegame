@@ -55,7 +55,7 @@ namespace Project.Main
                         string[] allowedTiles = new[] { "Grass" };
                         string[] allowedBlockers = new[] { "Mountains" };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(25, 25),
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(12, 12),
                             new Vector2f(4, 4));
                         activeLevel = generator.Generate(levelTemplate);
                     }
@@ -82,7 +82,8 @@ namespace Project.Main
                     }
                     if (ImGui.Button("Tick"))
                     {
-                        generator.Tick();
+
+                            generator.Tick();
                     }
 
                     if (ImGui.Button("Close Game"))
