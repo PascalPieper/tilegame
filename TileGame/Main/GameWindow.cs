@@ -1,13 +1,12 @@
 ﻿using ImGuiNET;
-using Project.Level;
-using Project.Tiles;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
+using TileGame.Level;
 using TileGame.Tiles;
 
-namespace Project.Main
+namespace TileGame.Main
 {
     class GameWindow
     {
@@ -35,7 +34,7 @@ namespace Project.Main
             //Instantiation of crucial Managers
             var gameManager = new GameManager();
             var activeLevel = new Level.Level(gameManager);
-            var generator = new LevelGenerator(gameManager);
+            var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
 
             // Start the game loop
             while (window.IsOpen)

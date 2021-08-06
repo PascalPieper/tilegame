@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Project.Utility.Random
+namespace TileGame.Utility.Random
 {
     public static class RandomGenerator
     {

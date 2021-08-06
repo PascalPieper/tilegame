@@ -9,7 +9,7 @@ using SFML.Window;
 using Time = SFML.System.Time;
 using Window = SFML.Window.Window;
 
-namespace Project.Layers
+namespace TileGame.Layers
 {
     public class MainLayer : Layer
     {
@@ -51,7 +51,7 @@ namespace Project.Layers
             _viewportPane.OnGuiRender();
             _camera.OnGuiRender();
 
-            if (ImGui.Begin("Project"))
+            if (ImGui.Begin("TileGame"))
             {
                 Gui.BeginPropertyGrid();
                 Gui.EndPropertyGrid();

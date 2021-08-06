@@ -1,4 +1,4 @@
-namespace Project.Interfaces
+namespace TileGame.Interfaces
 {
     public interface IBlockade
     {

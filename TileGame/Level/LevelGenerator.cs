@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using Project.Game;
-using Project.Utility.Random;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
 using TileGame.Interfaces;
 using TileGame.Tiles;
+using TileGame.Utility.Random;
 
-namespace Project.Level
+namespace TileGame.Level
 {
     public class LevelGenerator : ITick
     {
         private readonly GameManager _manager;
         public uint Identifier { get; set; } = 0;
+        public LevelTemplate Template { get; set; }
+        public TileFactory TileFactory { get; set; }
 
         private delegate void LevelTask();
 
         private readonly Queue<LevelTask> _levelGenerationQueue = new Queue<LevelTask>();
 
-        public LevelGenerator(GameManager manager)
+
+        public LevelGenerator(GameManager manager, TileFactory tileFactory)
         {
             _manager = manager;
+            TileFactory = tileFactory;
+            string[] allowedTiles = new[] { "Grass" };
+            string[] allowedBlockers = new[] { "Mountains" };
+            var assembly = new TileAssembly(allowedTiles, allowedBlockers);
+            Template = new LevelTemplate(assembly, new Vector2u(15,15), new Vector2f(15,15));
         }
 
         public Level Generate(LevelTemplate template)
@@ -81,9 +88,16 @@ namespace Project.Level
             
         }
 
-        public void PlaceMapBarriers()
+        public void PlaceMapBarriers(uint mapSizeX, uint mapSizeY, string tileName)
         {
-            
+            for (int i = 0; i < mapSizeX; i++)
+            {
+                // Generate {0 - 1,2,3,4}
+                // Generate {max - 1,2,3,4}
+                
+                // Generate {1,2,3,4 - 0)
+                // Generate {1,2,3,4 - max}
+            }
         }
 
         public void Tick()

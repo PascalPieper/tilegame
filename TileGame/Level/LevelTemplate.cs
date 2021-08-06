@@ -1,7 +1,7 @@
-﻿using Project.Tiles;
-using SFML.System;
+﻿using SFML.System;
+using TileGame.Tiles;
 
-namespace Project.Level
+namespace TileGame.Level
 {
     public class LevelTemplate
     {

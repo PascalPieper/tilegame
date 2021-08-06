@@ -1,4 +1,4 @@
-﻿namespace Project.Tiles
+﻿namespace TileGame.Tiles
 {
     public struct TileAssembly
     {

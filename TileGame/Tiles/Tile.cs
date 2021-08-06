@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using Project.Tiles.Behavior;
+using TileGame.Tiles.Behavior;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Interfaces;

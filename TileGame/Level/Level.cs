@@ -5,7 +5,7 @@ using TileGame.Game;
 using TileGame.Interfaces;
 using TileGame.Tiles;
 
-namespace Project.Level
+namespace TileGame.Level
 {
     public class Level : ITick
     {

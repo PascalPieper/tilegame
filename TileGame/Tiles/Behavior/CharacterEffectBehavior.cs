@@ -1,6 +1,6 @@
 ﻿using TileGame.Character;
 
-namespace Project.Tiles.Behavior
+namespace TileGame.Tiles.Behavior
 {
     public abstract class CharacterEffectBehavior
     {

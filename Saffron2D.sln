@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saffron2D", "Saffron2D\Saffron2D.csproj", "{B11C69F3-7BF4-486F-9AB1-B0D2F54AFE0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project", "Project\Project.csproj", "{EF243B05-04C6-409F-96A0-2AF1C01F8C88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TileGame", "TileGame\TileGame.csproj", "{EF243B05-04C6-409F-96A0-2AF1C01F8C88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
