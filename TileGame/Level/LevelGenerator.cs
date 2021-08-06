@@ -92,13 +92,15 @@ namespace TileGame.Level
             var result = RandomGenerator.RandomNumber(0, 1);
             if (result == 0)
             {
-                var test = RandomGenerator.RandomNumber(0, mapSizeX - 1);
+                var test = RandomGenerator.RandomNumber(1, mapSizeX - 2);
+                Console.WriteLine(1 + " " + test);
                 level.TileMatrix[1, test] = CreateTile(nameof(StartTile), 1, test);
             }
             else
             {
-                var test = RandomGenerator.RandomNumber(0, mapSizeY - 1);
-                level.TileMatrix[test - 1, 1] = CreateTile(nameof(StartTile), test - 1, 1);
+                var test = RandomGenerator.RandomNumber(1, mapSizeY- 2);
+                Console.WriteLine(mapSizeX - 2 + " " + test);
+                level.TileMatrix[test - 1, 1] = CreateTile(nameof(StartTile), mapSizeX - 2, test);
             }
         }
 

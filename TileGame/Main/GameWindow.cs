@@ -23,7 +23,8 @@ namespace TileGame.Main
         {
             //Window Settings
             var mode = new SFML.Window.VideoMode(1920, 1080);
-            View view1 = new View(new FloatRect(0, 0, 256, 144));
+            View view1 = new View(new FloatRect(0, 60, 256, 144));
+            view1.Zoom(2);
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
             window.SetFramerateLimit(60);
 
@@ -54,7 +55,7 @@ namespace TileGame.Main
                         string[] allowedTiles = new[] { "Grass" };
                         string[] allowedBlockers = new[] { "Mountains" };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(18, 18),
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(32, 32),
                             new Vector2f(8, 8));
                         activeLevel = generator.Generate(levelTemplate);
                     }
