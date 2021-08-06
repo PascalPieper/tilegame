@@ -29,7 +29,7 @@ namespace TileGame.Level
             string[] allowedTiles = new[] { "Grass" };
             string[] allowedBlockers = new[] { "Mountains" };
             var assembly = new TileAssembly(allowedTiles, allowedBlockers);
-            LevelTemplate = new LevelTemplate(assembly, new Vector2u(8, 8), new Vector2f(8, 8));
+            LevelTemplate = new LevelTemplate(assembly, new Vector2u(12, 12), new Vector2f(8, 8));
         }
 
         public Level Generate(LevelTemplate template)
@@ -50,8 +50,11 @@ namespace TileGame.Level
                     {
                         _levelGenerationQueue.Enqueue(() =>
                         {
-                            level.TileMatrix[xPos, yPos] =
-                                CreateTile(nameof(StartTile), xPos, yPos);
+                            if (level.CheckTilePlaced(new Vector2u(xPos, yPos)))
+                            {
+                                level.TileMatrix[xPos, yPos] =
+                                    CreateTile(nameof(StartTile), xPos, yPos);
+                            }
                         });
                     }
                     else
@@ -99,9 +102,9 @@ namespace TileGame.Level
                 }
             }
 
-            for (uint i = 0; i < mapSizeY - 1; i++)
+            for (uint i = 0; i < mapSizeY; i++)
             {
-                if (level.CheckTilePlaced(new Vector2u(mapSizeX - 1, i)))
+                if (level.CheckTilePlaced(new Vector2u(mapSizeY - 1, i)))
                 {
                     level.TileMatrix[mapSizeX - 1, i] = CreateTile(tileName, mapSizeX - 1, i);
                 }
@@ -111,7 +114,7 @@ namespace TileGame.Level
             {
                 if (level.CheckTilePlaced(new Vector2u(i, 0)))
                 {
-                    CreateTile(tileName, i, 0);
+                    level.TileMatrix[i, 0] = CreateTile(tileName, i, 0);
                 }
             }
 
@@ -119,7 +122,7 @@ namespace TileGame.Level
             {
                 if (level.CheckTilePlaced(new Vector2u(i, mapSizeY - 1)))
                 {
-                    CreateTile(tileName, i, mapSizeY - 1);
+                    level.TileMatrix[i, mapSizeY - 1] = CreateTile(tileName, i, mapSizeY - 1);
                 }
             }
         }

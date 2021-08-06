@@ -20,7 +20,7 @@ namespace TileGame.Tiles
 
         public StartTile()
         {
-            TileRect.FillColor = Color.Magenta;
+            TileRect.FillColor = Color.Red;
         }
     }
 }
