@@ -54,8 +54,8 @@ namespace TileGame.Main
                         string[] allowedTiles = new[] { "Grass" };
                         string[] allowedBlockers = new[] { "Mountains" };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(12, 12),
-                            new Vector2f(4, 4));
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(18, 18),
+                            new Vector2f(8, 8));
                         activeLevel = generator.Generate(levelTemplate);
                     }
 

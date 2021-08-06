@@ -29,7 +29,7 @@ namespace TileGame.Level
             string[] allowedTiles = new[] { "Grass" };
             string[] allowedBlockers = new[] { "Mountains" };
             var assembly = new TileAssembly(allowedTiles, allowedBlockers);
-            LevelTemplate = new LevelTemplate(assembly, new Vector2u(12, 12), new Vector2f(8, 8));
+            LevelTemplate = new LevelTemplate(assembly, new Vector2u(24, 24), new Vector2f(8, 8));
         }
 
         public Level Generate(LevelTemplate template)
@@ -38,7 +38,7 @@ namespace TileGame.Level
 
             level.TileMatrix = new Tile[template.MapSize.X, template.MapSize.Y];
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
-
+            PlaceSpawnTile(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
             for (uint i = 0; i < template.MapSize.X; i++)
             {
                 for (uint j = 0; j < template.MapSize.Y; j++)
@@ -53,7 +53,7 @@ namespace TileGame.Level
                             if (level.CheckTilePlaced(new Vector2u(xPos, yPos)))
                             {
                                 level.TileMatrix[xPos, yPos] =
-                                    CreateTile(nameof(StartTile), xPos, yPos);
+                                    CreateTile(nameof(Mountains), xPos, yPos);
                             }
                         });
                     }
@@ -87,8 +87,19 @@ namespace TileGame.Level
         }
 
 
-        public void PlaceSpawnTile()
+        public void PlaceSpawnTile(uint mapSizeX, uint mapSizeY, string tileName, Level level)
         {
+            var result = RandomGenerator.RandomNumber(0, 1);
+            if (result == 0)
+            {
+                var test = RandomGenerator.RandomNumber(0, mapSizeX - 1);
+                level.TileMatrix[1, test] = CreateTile(nameof(StartTile), 1, test);
+            }
+            else
+            {
+                var test = RandomGenerator.RandomNumber(0, mapSizeY - 1);
+                level.TileMatrix[test - 1, 1] = CreateTile(nameof(StartTile), test - 1, 1);
+            }
         }
 
 
