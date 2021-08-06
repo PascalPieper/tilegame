@@ -22,12 +22,12 @@ namespace TileGame.Game
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR in [TileFactory] - Specified Tile Name: " + tileIdentifier +
-                                  " does not exist as derived type");
+                Console.WriteLine("ERROR in [TileFactory.cs] - Specified Tile Name: " + tileIdentifier +
+                                  " does not exist as derived type - " + e.Message);
                 
                 var tile = GetInstance(nameof(Grass));
                 gameManager.AddGameObjectToLoop(tile, tile.TileRect);
-                return null;
+                return tile;
             }
         }
     }

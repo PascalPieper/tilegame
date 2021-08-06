@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
@@ -7,9 +8,14 @@ using TileGame.Tiles;
 
 namespace Project.Level
 {
-    public class LevelGenerator
+    public class LevelGenerator : ITick
     {
         private readonly GameManager _manager;
+        public uint Identifier { get; set; } = 0;
+
+        private delegate void LevelTask();
+
+        private readonly Queue<LevelTask> _levelGenerationQueue = new Queue<LevelTask>();
 
         public LevelGenerator(GameManager manager)
         {
@@ -23,32 +29,35 @@ namespace Project.Level
 
             level.TileMatrix = new Tile[template.MapSize.X, template.MapSize.Y];
 
-            for (var i = 0; i < template.MapSize.X; i++)
+            for (uint i = 0; i < template.MapSize.X; i++)
             {
-                for (var j = 0; j < template.MapSize.Y; j++)
+                for (uint j = 0; j < template.MapSize.Y; j++)
                 {
-                    var temp = factory.CreateTile(nameof(Grass));
-                    temp.TileRect.Position = new Vector2f(i * template.TileSize.X, j * template.TileSize.Y);
-                    temp.TileRect.Size = template.TileSize;
-                    AddToGameManager(temp.TileRect, temp);
-
-                    level.TileMatrix[i, j] = temp;
+                    var xPos = i;
+                    var yPos = j;
+                    _levelGenerationQueue.Enqueue(() =>
+                    {
+                        level.TileMatrix[xPos, yPos] = CreateTile(factory, "asjdoik", template, xPos, yPos);
+                    });
                 }
             }
-
-            var start = factory.CreateTile(nameof(StartTile));
-            start.TileRect.Size = template.TileSize;
-            start.TileRect.Position = new Vector2f(0, 0);
-            AddToGameManager(start.TileRect, start);
-
 
             return level;
         }
 
-        private void AddToGameManager(Drawable drawable, ITick tick)
+        private static Tile CreateTile(TileFactory factory, string tileName, LevelTemplate template, uint xPos, uint yPos)
         {
-            _manager.Drawables.Add(drawable);
-            _manager.Entities.Add(tick);
+            var tile = factory.CreateTile(nameof(tileName));
+            tile.TileRect.Position = new Vector2f(xPos * template.TileSize.X, yPos * template.TileSize.Y);
+            tile.TileRect.Size = template.TileSize;
+
+            return tile;
+        }
+
+        public void Tick()
+        {
+            var task = _levelGenerationQueue.Dequeue();
+            task.Invoke();
         }
     }
 }

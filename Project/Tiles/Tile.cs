@@ -15,6 +15,17 @@ namespace TileGame.Tiles
 
     public abstract class Tile : ITick
     {
+        public string Name { get; protected set; }
+
+        public RectangleShape TileRect { get; set; }
+
+        public Vector<uint> CurrentMapPosition { get; set; }
+
+        public AdjacentTiles AdjacentTiles { get; set; } = null;
+        public uint Identifier => 0;
+
+        public CharacterEffectBehavior Behavior { get; protected set; }
+
         protected Tile(string name, CharacterEffectBehavior behavior, Color rectColor)
         {
             Name = name;
@@ -29,16 +40,6 @@ namespace TileGame.Tiles
             TileRect = new RectangleShape();
             Behavior = null;
         }
-
-        public string Name { get; protected set; }
-
-        public RectangleShape TileRect { get; set; }
-
-        public Vector<uint> CurrentMapPosition { get; set; }
-
-        public AdjacentTiles AdjacentTiles { get; set; } = null;
-
-        public CharacterEffectBehavior Behavior { get; protected set; }
 
         public virtual void Tick()
         {

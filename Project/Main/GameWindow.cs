@@ -27,21 +27,22 @@ namespace Project.Main
             View view1 = new View(new FloatRect(0, 0, 256, 144));
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
             window.SetFramerateLimit(60);
-            
+
             //Setup for Input
             window.KeyPressed += this.Window_KeyPressed;
             GuiImpl.Init(window);
-            
+
             //Instantiation of crucial Managers
             var gameManager = new GameManager();
             var activeLevel = new Level.Level(gameManager);
-            
+            var generator = new LevelGenerator(gameManager);
+
             // Start the game loop
             while (window.IsOpen)
             {
                 DeltaTime = this.deltaTimeClock.Restart();
                 GuiImpl.Update(window, this.DeltaTime);
-                
+
                 #region ImGui Interface
 
                 if (ImGui.Begin("Level Selection"))
@@ -49,8 +50,8 @@ namespace Project.Main
                     if (ImGui.Button("Load Exercise 1"))
                     {
                         activeLevel.UnloadLevel();
-                        LevelGenerator generator = new LevelGenerator(gameManager);
-                        
+
+
                         string[] allowedTiles = new[] { "Grass" };
                         string[] allowedBlockers = new[] { "Mountains" };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
@@ -78,6 +79,10 @@ namespace Project.Main
 
                     if (ImGui.Button("Load Exercise 5"))
                     {
+                    }
+                    if (ImGui.Button("Tick"))
+                    {
+                        generator.Tick();
                     }
 
                     if (ImGui.Button("Close Game"))
@@ -125,7 +130,7 @@ namespace Project.Main
                 deltaTimeClock.Restart();
             }
         }
-        
+
         private void Window_KeyPressed(object sender, SFML.Window.KeyEventArgs e)
         {
             var window = (SFML.Window.Window)sender;

@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using SFML.System;
 using TileGame.Game;
+using TileGame.Interfaces;
 using TileGame.Tiles;
 
 namespace Project.Level
 {
-    public class Level
+    public class Level : ITick
     {
         public Tile[,] TileMatrix { get; set; }
         public List<Vector2i> EmptyTiles { get; set; }
         private readonly GameManager _gameManager;
-
+        public uint Identifier => 0;
         public Level(GameManager gameManager)
         {
             this._gameManager = gameManager;
@@ -36,9 +37,15 @@ namespace Project.Level
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error at [Level.cs] - The level contents are corrupted and cannot be unloaded");
+                Console.WriteLine("Error at [Level.cs] - The level contents are corrupted and cannot be unloaded " + e.Message);
             }
 
         }
+
+        public void Tick()
+        {
+        }
+
+        
     }
 }

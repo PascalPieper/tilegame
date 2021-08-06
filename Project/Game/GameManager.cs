@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using TileGame.Interfaces;
 
@@ -7,20 +8,23 @@ namespace TileGame.Game
     public class GameManager
 
     {
-        public List<ITick> Entities;
-        public List<Drawable> Drawables;
+        public Dictionary<uint, ITick> GameObjects;
+        public Dictionary<uint, Drawable> Drawables;
+
+        public uint IdCount { get; private set; } = 0;
 
         public GameManager()
         {
-            Entities = new List<ITick>();
-            Drawables = new List<Drawable>();
+            GameObjects = new Dictionary<uint, ITick>();
+            Drawables = new Dictionary<uint, Drawable>();
         }
 
         public void Tick()
         {
-            for (int i = Entities.Count; i > 0; i--)
+            for (int index = GameObjects.Count; index > 0; index--)
             {
-                Entities[i - 1].Tick();
+                var item = GameObjects.ElementAt(index);
+                item.Value.Tick();
             }
         }
 
@@ -28,25 +32,27 @@ namespace TileGame.Game
         {
             foreach (var entity in this.Drawables)
             {
-                window.Draw(entity);
+                window.Draw(entity.Value);
             }
         }
 
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo)
         {
-            Entities.Add(tickingGo);
-            Drawables.Add(drawableGo);
+            
+            GameObjects.Add(IdCount, tickingGo);
+            Drawables.Add(IdCount, drawableGo);
+            IdCount++;
         }
 
         public void UnloadAllGameObjects()
         {
-            for (int i = Entities.Count; i > 0; i--)
+            foreach(KeyValuePair<uint, ITick> entry in GameObjects)
             {
-                Entities.Remove(Entities[i - 1]);
+                GameObjects.Remove(entry.Key);
             }
-            for (int i = Drawables.Count ; i > 0; i--)
+            foreach(KeyValuePair<uint, Drawable> entry in Drawables)
             {
-                Drawables.Remove(Drawables[i - 1]);
+                Drawables.Remove(entry.Key);
             }
         }
     }
