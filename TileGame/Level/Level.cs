@@ -42,6 +42,11 @@ namespace TileGame.Level
 
         }
 
+        public bool CheckTilePlaced(Vector2u tilePosition)
+        {
+            return TileMatrix[tilePosition.X, tilePosition.Y] == null;
+        }
+        
         public void Tick()
         {
         }
