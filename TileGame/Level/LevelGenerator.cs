@@ -38,7 +38,7 @@ namespace TileGame.Level
 
             level.TileMatrix = new Tile[template.MapSize.X, template.MapSize.Y];
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
-            PlaceSpawnTile(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
+            PlaceEssentialTiles(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
             for (uint i = 0; i < template.MapSize.X; i++)
             {
                 for (uint j = 0; j < template.MapSize.Y; j++)
@@ -50,6 +50,7 @@ namespace TileGame.Level
                     {
                         _levelGenerationQueue.Enqueue(() =>
                         {
+                            
                             if (level.CheckTilePlaced(new Vector2u(xPos, yPos)))
                             {
                                 level.TileMatrix[xPos, yPos] =
@@ -86,22 +87,29 @@ namespace TileGame.Level
         {
         }
 
-
-        public void PlaceSpawnTile(uint mapSizeX, uint mapSizeY, string tileName, Level level)
+        private void CreateEssentialTiles(uint mapSizeX, uint mapSizeY, string tileName, Level level)
         {
+            string[] names = new string[] {"StartTile", "ExitTile"};
             var result = RandomGenerator.RandomNumber(0, 1);
-            if (result == 0)
+            if (result == 1)
             {
-                var test = RandomGenerator.RandomNumber(1, mapSizeX - 2);
-                Console.WriteLine(1 + " " + test);
-                level.TileMatrix[1, test] = CreateTile(nameof(StartTile), 1, test);
+                names[0] = nameof(ExitTile);
+                names[1] = nameof(StartTile);
             }
-            else
-            {
-                var test = RandomGenerator.RandomNumber(1, mapSizeY- 2);
-                Console.WriteLine(mapSizeX - 2 + " " + test);
-                level.TileMatrix[test - 1, 1] = CreateTile(nameof(StartTile), mapSizeX - 2, test);
-            }
+            
+            var number = RandomGenerator.RandomNumber(1, mapSizeX - 2);
+            Console.WriteLine(1 + " " + number);
+            level.TileMatrix[1, number] = CreateTile(names[0], 1, number);
+
+            number = RandomGenerator.RandomNumber(1, mapSizeY- 2);
+            Console.WriteLine(mapSizeX - 2 + " " + number);
+            level.TileMatrix[mapSizeX - 2, number] = CreateTile(names[1], mapSizeX - 2, number);
+        }
+
+
+        public void PlaceEssentialTiles(uint mapSizeX, uint mapSizeY, string tileName, Level level)
+        {
+            CreateEssentialTiles(mapSizeX, mapSizeY, tileName, level);
         }
 
 

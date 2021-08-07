@@ -1,5 +1,6 @@
 ﻿using TileGame.Tiles.Behavior;
 using SFML.Graphics;
+using TileGame.Game;
 using TileGame.Interfaces;
 
 namespace TileGame.Tiles
@@ -10,8 +11,6 @@ namespace TileGame.Tiles
 
         public void OnEnter()
         {
-            
-
         }
 
         public void OnExit()
@@ -20,7 +19,8 @@ namespace TileGame.Tiles
 
         public StartTile()
         {
-            TileRect.FillColor = Color.Red;
+            ResourceManager resourceManager = new ResourceManager();
+            this.TileRect.Texture = resourceManager.LoadTexture("resources/spawnpoint.png");
         }
     }
 }

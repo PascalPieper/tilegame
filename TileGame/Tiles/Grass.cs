@@ -2,6 +2,7 @@
 using System.Numerics;
 using TileGame.Tiles.Behavior;
 using SFML.Graphics;
+using TileGame.Game;
 using TileGame.Interfaces;
 using Char = TileGame.Character.Char;
 
@@ -19,8 +20,8 @@ namespace TileGame.Tiles
 
         public Grass()
         {
-            this.TileRect.FillColor = new Color(55, 200, 75);
-            
+            ResourceManager resourceManager = new ResourceManager();
+            this.TileRect.Texture = resourceManager.LoadTexture("resources/grass.png");
         }
         
     }

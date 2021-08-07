@@ -7,6 +7,7 @@ namespace TileGame.Game
     public class ResourceManager
     {
         private static ResourceManager _instance = null;
+        private string ExecuteableDirectoryPath;
         readonly Dictionary<string, Texture> _textures = new Dictionary<string, Texture>();
         readonly Dictionary<string, Sound> _sounds = new Dictionary<string, Sound>();
         readonly Dictionary<string, Font> _fonts = new Dictionary<string, Font>();
@@ -23,11 +24,19 @@ namespace TileGame.Game
             }
         }
 
-        public void LoadTextureFromFile(string name, string path)
+        public Texture LoadTexture(string path)
         {
-            Texture texture = new Texture(path);
+            var fullPath = System.AppDomain.CurrentDomain.BaseDirectory + path;
 
-            _textures.Add(name, texture);
+            if (_textures.ContainsKey(path))
+            {
+                return _textures[path];
+            }
+            
+            Texture texture = new Texture(fullPath);
+
+            _textures.Add(path, texture);
+            return texture;
         }
 
         public Texture GetTexture(string name)
