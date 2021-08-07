@@ -98,7 +98,7 @@ namespace TileGame.Main
                 {
                     if (ImGui.Button("Increase Zoom"))
                     {
-                        view1.Size = new Vector2f(view1.Size.X + 55, view1.Size.Y + 55);
+                        view1.Size = new Vector2f(0, view1.Size.Y + 55);
                     }
 
                     if (ImGui.Button("Decrease Zoom"))
