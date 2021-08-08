@@ -12,6 +12,7 @@ namespace TileGame.Main
     {
         private Clock deltaTimeClock;
         private Time DeltaTime;
+        private int _generationSpeed = 4;
 
         public GameWindow()
         {
@@ -34,8 +35,9 @@ namespace TileGame.Main
 
             //Instantiation of crucial Managers
             var gameManager = new GameManager();
-            var activeLevel = new Level.Level(gameManager);
+            Level.Level activeLevel = null;
             var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
+            LoadDefaultLevel(ref activeLevel, generator, _generationSpeed);
 
             // Start the game loop
             while (window.IsOpen)
@@ -47,22 +49,18 @@ namespace TileGame.Main
 
                 if (ImGui.Begin("Level Selection"))
                 {
+                    if (ImGui.SliderInt("Spawn Speed", ref _generationSpeed, 1, 10))
+                    {
+                    }
+
                     if (ImGui.Button("Load Exercise 1"))
                     {
-                        activeLevel.UnloadLevel();
-
-
-                        string[] allowedTiles = new[] { "Grass" };
-                        string[] allowedBlockers = new[] { "Mountains" };
-                        TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(32, 32),
-                            new Vector2f(16, 16));
-                        activeLevel = generator.Generate(levelTemplate);
+                        LoadDefaultLevel(ref activeLevel, generator, _generationSpeed);
                     }
 
                     if (ImGui.Button("Load Exercise 2"))
                     {
-                        activeLevel.UnloadLevel();
+                        activeLevel?.DestroyAllTiles();
                     }
 
                     if (ImGui.Button("Load Exercise 3"))
@@ -80,10 +78,10 @@ namespace TileGame.Main
                     if (ImGui.Button("Load Exercise 5"))
                     {
                     }
+
                     if (ImGui.Button("Tick"))
                     {
-
-                            generator.Tick();
+                        activeLevel?.Tick();
                     }
 
                     if (ImGui.Button("Close Game"))
@@ -120,6 +118,8 @@ namespace TileGame.Main
 
                 #endregion
 
+                activeLevel?.Update();
+
                 // Process events
                 window.SetView(view1);
                 window.DispatchEvents();
@@ -139,6 +139,19 @@ namespace TileGame.Main
             {
                 window.Close();
             }
+        }
+
+        private void LoadDefaultLevel(ref Level.Level activeLevel, LevelGenerator generator, int generationSpeed)
+        {
+            activeLevel?.DestroyAllTiles();
+
+
+            string[] allowedTiles = new[] { "Grass" };
+            string[] allowedBlockers = new[] { "Mountains" };
+            TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
+            LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(32, 32),
+                new Vector2f(16, 16));
+            activeLevel = generator.GenerateLevel(levelTemplate, _generationSpeed);
         }
     }
 }

@@ -8,51 +8,66 @@ namespace TileGame.Game
     public class GameManager
 
     {
-        public Dictionary<uint, ITick> GameObjects;
-        public Dictionary<uint, Drawable> Drawables;
+        private readonly Dictionary<uint, ITick> _tickingGameObjects;
+        private readonly Dictionary<uint, Drawable> _drawableGameObjects;
+        private readonly Dictionary<uint, IUpdate> _updatingGameObjects;
 
-        public uint IdCount { get; private set; } = 0;
+        private uint IdCount { get; set; } = 0;
 
         public GameManager()
         {
-            GameObjects = new Dictionary<uint, ITick>();
-            Drawables = new Dictionary<uint, Drawable>();
+            _tickingGameObjects = new Dictionary<uint, ITick>();
+            _drawableGameObjects = new Dictionary<uint, Drawable>();
+            _updatingGameObjects = new Dictionary<uint, IUpdate>();
         }
 
         public void Tick()
         {
-            for (int index = GameObjects.Count; index > 0; index--)
+            for (int index = _tickingGameObjects.Count; index > 0; index--)
             {
-                var item = GameObjects.ElementAt(index);
+                var item = _tickingGameObjects.ElementAt(index);
                 item.Value.Tick();
             }
         }
 
         public void Draw(RenderWindow window)
         {
-            foreach (var entity in this.Drawables)
+            foreach (var entity in this._drawableGameObjects)
             {
                 window.Draw(entity.Value);
+            }
+        }
+
+        public void Update()
+        {
+            for (int index = _updatingGameObjects.Count; index > 0; index--)
+            {
+                var item = _updatingGameObjects.ElementAt(index);
+                item.Value.Update();
             }
         }
 
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo)
         {
             
-            GameObjects.Add(IdCount, tickingGo);
-            Drawables.Add(IdCount, drawableGo);
+            _tickingGameObjects.Add(IdCount, tickingGo);
+            _drawableGameObjects.Add(IdCount, drawableGo);
             IdCount++;
         }
 
         public void UnloadAllGameObjects()
         {
-            foreach(KeyValuePair<uint, ITick> entry in GameObjects)
+            foreach(KeyValuePair<uint, ITick> entry in _tickingGameObjects)
             {
-                GameObjects.Remove(entry.Key);
+                _tickingGameObjects.Remove(entry.Key);
             }
-            foreach(KeyValuePair<uint, Drawable> entry in Drawables)
+            foreach(KeyValuePair<uint, Drawable> entry in _drawableGameObjects)
             {
-                Drawables.Remove(entry.Key);
+                _drawableGameObjects.Remove(entry.Key);
+            }
+            foreach (KeyValuePair<uint, IUpdate> entry in _updatingGameObjects)
+            {
+                _updatingGameObjects.Remove(entry.Key);
             }
         }
     }

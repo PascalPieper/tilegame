@@ -21,24 +21,29 @@
         public string Description { get; private set; }
         public double Price { get; private set; }
 
+        public ItemBase(string name, string description, double price, float weight)
+        {
+            Name = name;
+            Description = description;
+            Price = price;
+            _weight = weight;
+        }
 
-        private float weight;
+        private float _weight;
 
         public float Weight
         {
-            get => this.weight;
+            get => this._weight;
             private set
             {
                 if (value <= 0)
                 {
-                    this.weight = 0;
+                    this._weight = 0;
                     return;
                 }
 
-                this.weight = value;
+                this._weight = value;
             }
         }
-
-
     }
 }

@@ -13,8 +13,4 @@ namespace TileGame.Character
 
         public bool MoveRight() => throw new NotImplementedException();
     }
-
-    public class Player : Char
-    {
-    }
 }

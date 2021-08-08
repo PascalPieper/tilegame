@@ -10,16 +10,12 @@ using TileGame.Utility.Random;
 
 namespace TileGame.Level
 {
-    public class LevelGenerator : ITick
+    public class LevelGenerator
     {
         private readonly GameManager _manager;
         public uint Identifier { get; set; } = 0;
-        public LevelTemplate LevelTemplate { get; set; }
-        public TileFactory TileFactory { get; set; }
-
-        private delegate void LevelTask();
-
-        private readonly Queue<LevelTask> _levelGenerationQueue = new Queue<LevelTask>();
+        private LevelTemplate LevelTemplate { get; set; }
+        private TileFactory TileFactory { get; set; }
 
 
         public LevelGenerator(GameManager manager, TileFactory tileFactory)
@@ -32,9 +28,9 @@ namespace TileGame.Level
             LevelTemplate = new LevelTemplate(assembly, new Vector2u(24, 24), new Vector2f(8, 8));
         }
 
-        public Level Generate(LevelTemplate template)
+        public Level GenerateLevel(LevelTemplate template, int generatingSpeed)
         {
-            var level = new Level(_manager);
+            var level = new Level(_manager, template.MapSize, generatingSpeed);
 
             level.TileMatrix = new Tile[template.MapSize.X, template.MapSize.Y];
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
@@ -48,9 +44,8 @@ namespace TileGame.Level
                     var result = RandomGenerator.RandomNumber(0, 1);
                     if (result == 0)
                     {
-                        _levelGenerationQueue.Enqueue(() =>
+                        level.LevelGenerationQueue.Enqueue(() =>
                         {
-                            
                             if (level.CheckTilePlaced(new Vector2u(xPos, yPos)))
                             {
                                 level.TileMatrix[xPos, yPos] =
@@ -60,7 +55,7 @@ namespace TileGame.Level
                     }
                     else
                     {
-                        _levelGenerationQueue.Enqueue(() =>
+                        level.LevelGenerationQueue.Enqueue(() =>
                         {
                             if (level.CheckTilePlaced(new Vector2u(xPos, yPos)))
                             {
@@ -83,35 +78,38 @@ namespace TileGame.Level
             return tile;
         }
 
+        private bool GenerateChunk(string tileName, float repeatPercantage)
+        {
+            return false;
+        }
+
         private void CreateSpawnPosition()
         {
         }
 
         private void CreateEssentialTiles(uint mapSizeX, uint mapSizeY, string tileName, Level level)
         {
-            string[] names = new string[] {"StartTile", "ExitTile"};
+            string[] names = new string[] { "StartTile", "ExitTile" };
             var result = RandomGenerator.RandomNumber(0, 1);
             if (result == 1)
             {
                 names[0] = nameof(ExitTile);
                 names[1] = nameof(StartTile);
             }
-            
+
             var number = RandomGenerator.RandomNumber(1, mapSizeX - 2);
             Console.WriteLine(1 + " " + number);
             level.TileMatrix[1, number] = CreateTile(names[0], 1, number);
 
-            number = RandomGenerator.RandomNumber(1, mapSizeY- 2);
+            number = RandomGenerator.RandomNumber(1, mapSizeY - 2);
             Console.WriteLine(mapSizeX - 2 + " " + number);
             level.TileMatrix[mapSizeX - 2, number] = CreateTile(names[1], mapSizeX - 2, number);
         }
-
 
         public void PlaceEssentialTiles(uint mapSizeX, uint mapSizeY, string tileName, Level level)
         {
             CreateEssentialTiles(mapSizeX, mapSizeY, tileName, level);
         }
-
 
         private void PlaceMapBarriers(uint mapSizeX, uint mapSizeY, string tileName, Level level)
         {
@@ -146,12 +144,6 @@ namespace TileGame.Level
                     level.TileMatrix[i, mapSizeY - 1] = CreateTile(tileName, i, mapSizeY - 1);
                 }
             }
-        }
-
-        public void Tick()
-        {
-            _levelGenerationQueue.TryDequeue(out var task);
-            task?.Invoke();
         }
     }
 }
