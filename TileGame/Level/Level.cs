@@ -68,6 +68,7 @@ namespace TileGame.Level
 
         public List<Vector2u> FindEmptyTiles()
         {
+            EmptyTiles.Clear();
             var empty = new List<Vector2u>();
             for (uint i = 0; i < this.TileMatrix.GetLength(0); i++)
             {

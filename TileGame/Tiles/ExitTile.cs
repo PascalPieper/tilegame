@@ -3,7 +3,7 @@ using TileGame.Interfaces;
 
 namespace TileGame.Tiles
 {
-    public class ExitTile : Tile, ITraversable, IOccupied
+    public class ExitTile : Tile, ITraversable
     {
         public ExitTile()
         {

@@ -5,7 +5,7 @@ using TileGame.Interfaces;
 
 namespace TileGame.Tiles
 {
-    public class StartTile : Tile, ITraversable, IOccupied
+    public class StartTile : Tile, ITraversable
     {
         public IOccupyTile OccupyingEntity { get; }
 

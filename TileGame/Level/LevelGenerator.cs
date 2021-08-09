@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
@@ -78,8 +79,10 @@ namespace TileGame.Level
             return tile;
         }
 
-        private bool GenerateChunk(string tileName, float repeatPercantage)
+        private bool GenerateChunk(Level level, string tileName, float repeatPercentage)
         {
+            var result = level.FindEmptyTiles();
+            var centerTile = RandomGenerator.RandomNumber(0, result.Count);
             return false;
         }
 

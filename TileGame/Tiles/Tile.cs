@@ -4,24 +4,19 @@ using TileGame.Tiles.Behavior;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Interfaces;
+using TileGame.Pathfinding;
 using Char = TileGame.Character.Char;
 
 namespace TileGame.Tiles
 {
-    public interface IOccupied
-    {
-        IOccupyTile OccupyingEntity { get; }
-    }
-
     public abstract class Tile : ITick
     {
         public string Name { get; protected set; }
 
+        public Node Node;
+
         public RectangleShape TileRect { get; set; }
 
-        public Vector<uint> CurrentMapPosition { get; set; }
-
-        public AdjacentTiles AdjacentTiles { get; set; } = null;
         public uint Identifier => 0;
 
         public CharacterEffectBehavior Behavior { get; protected set; }
