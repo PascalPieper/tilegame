@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SFML.System;
 using TileGame.Game;
 using TileGame.Interfaces;
+using TileGame.Pathfinding;
 using TileGame.Tiles;
 
 namespace TileGame.Level
@@ -15,6 +16,7 @@ namespace TileGame.Level
         public List<Vector2i> EmptyTiles { get; set; }
         public Vector2i LevelSize { get; set; }
         private readonly GameManager _gameManager;
+        public Pathfinding.Pathfinding Pathfinding { get; set; } = null;
 
         public delegate void LevelTask();
 

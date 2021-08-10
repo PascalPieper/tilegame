@@ -7,8 +7,8 @@ namespace TileGame.Pathfinding
     {
         public bool Walkable { get; set; }
         public Vector2f WorldPosition { get; set; }
-        public int GridX { get; set; }
-        public int GridY { get; set; }
+        
+        public Vector2i MatrixPosition { get; set; }
 
         public int GCost;
         public int HCost;
@@ -18,12 +18,11 @@ namespace TileGame.Pathfinding
         public Node Parent;
 
 
-        public Node(bool walkable, Vector2f worldPos, int gridX, int gridY)
+        public Node(bool walkable, Vector2f worldPos, Vector2i matrixPosition)
         {
             Walkable = walkable;
             WorldPosition = worldPos;
-            GridX = gridX;
-            GridY = gridY;
+            MatrixPosition = matrixPosition;
         }
     }
 }

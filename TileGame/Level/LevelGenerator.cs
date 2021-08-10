@@ -7,6 +7,7 @@ using SFML.Graphics;
 using SFML.System;
 using TileGame.Game;
 using TileGame.Interfaces;
+using TileGame.Pathfinding;
 using TileGame.Tiles;
 using TileGame.Utility.Random;
 
@@ -18,6 +19,7 @@ namespace TileGame.Level
         public uint Identifier { get; set; } = 0;
         private LevelTemplate LevelTemplate { get; set; }
         private TileFactory TileFactory { get; set; }
+        
 
 
         public LevelGenerator(GameManager manager, TileFactory tileFactory)
@@ -35,39 +37,10 @@ namespace TileGame.Level
             var level = new Level(_manager, template.MapSize, generatingSpeed);
 
             level.TileMatrix = new Tile[template.MapSize.X, template.MapSize.Y];
+            level.Pathfinding = new Pathfinding.Pathfinding(level.TileMatrix);
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
             PlaceEssentialTiles(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
-            for (int i = 0; i < template.MapSize.X; i++)
-            {
-                for (int j = 0; j < template.MapSize.Y; j++)
-                {
-                    var xPos = i;
-                    var yPos = j;
-                    var result = RandomGenerator.RandomNumber(0, 1);
-                    if (result == 0)
-                    {
-                        level.LevelGenerationQueue.Enqueue(() =>
-                        {
-                            if (level.CheckTilePlaced(new Vector2i(xPos, yPos)))
-                            {
-                                level.TileMatrix[xPos, yPos] =
-                                    CreateTile(nameof(Mountains), xPos, yPos);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        level.LevelGenerationQueue.Enqueue(() =>
-                        {
-                            if (level.CheckTilePlaced(new Vector2i(xPos, yPos)))
-                            {
-                                level.TileMatrix[xPos, yPos] = CreateTile(nameof(Grass), xPos, yPos);
-                            }
-                        });
-                    }
-                }
-            }
-
+            GenerateRandomTiles(template, level);
             return level;
         }
 
@@ -76,8 +49,7 @@ namespace TileGame.Level
             var tile = TileFactory.CreateTile(tileName);
             tile.TileRect.Position = new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
             tile.TileRect.Size = LevelTemplate.TileSize;
-            tile.Node.GridX = xPos;
-            tile.Node.GridY = yPos;
+            tile.Node.MatrixPosition = new Vector2i(xPos, yPos);
             tile.Node.WorldPosition = tile.TileRect.Position;
 
             return tile;
@@ -108,16 +80,52 @@ namespace TileGame.Level
             Console.WriteLine(1 + " " + number);
             level.TileMatrix[1, number] = CreateTile(names[0], 1, number);
             level.SpawnTile = level.TileMatrix[1, number];
+            Console.WriteLine(level.SpawnTile.Node.MatrixPosition);
 
             number = RandomGenerator.RandomNumber(1, mapSizeY - 2);
             Console.WriteLine(mapSizeX - 2 + " " + number);
             level.TileMatrix[mapSizeX - 2, number] = CreateTile(names[1], mapSizeX - 2, number);
             level.ExitTile = level.TileMatrix[mapSizeX - 2, number];
+            Console.WriteLine(level.ExitTile.Node.MatrixPosition);
         }
 
         public void PlaceEssentialTiles(int mapSizeX, int mapSizeY, string tileName, Level level)
         {
             CreateEssentialTiles(mapSizeX, mapSizeY, tileName, level);
+        }
+
+        private void GenerateRandomTiles(LevelTemplate template, Level level)
+        {
+            for (int i = 0; i < template.MapSize.X; i++)
+            {
+                for (int j = 0; j < template.MapSize.Y; j++)
+                {
+                    var xPos = i;
+                    var yPos = j;
+                    var result = RandomGenerator.RandomNumber(0, 1);
+                    if (result == 0)
+                    {
+                        level.LevelGenerationQueue.Enqueue(() =>
+                        {
+                            if (level.CheckTilePlaced(new Vector2i(xPos, yPos)))
+                            {
+                                level.TileMatrix[xPos, yPos] =
+                                    CreateTile(nameof(Mountains), xPos, yPos);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        level.LevelGenerationQueue.Enqueue(() =>
+                        {
+                            if (level.CheckTilePlaced(new Vector2i(xPos, yPos)))
+                            {
+                                level.TileMatrix[xPos, yPos] = CreateTile(nameof(Grass), xPos, yPos);
+                            }
+                        });
+                    }
+                }
+            }
         }
 
         private void PlaceMapBarriers(int mapSizeX, int mapSizeY, string tileName, Level level)

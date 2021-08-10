@@ -112,10 +112,8 @@ namespace TileGame.Main
 
                     if (ImGui.Button("Find Path"))
                     {
-                        Pathfinding.Pathfinding pf = new Pathfinding.Pathfinding();
-                        if (activeLevel != null)
-                            pf.FindPath(new Vector2(activeLevel.SpawnTile.Node.GridX, activeLevel.SpawnTile.Node.GridY),
-                                new Vector2(activeLevel.ExitTile.Node.GridX, activeLevel.ExitTile.Node.GridY));
+                        activeLevel.Pathfinding.FindPath(activeLevel.SpawnTile.Node.MatrixPosition, activeLevel.ExitTile.Node.MatrixPosition);
+                        var test = activeLevel.Pathfinding.Path;
                     }
 
                     ImGui.End();
