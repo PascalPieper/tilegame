@@ -13,7 +13,7 @@ namespace TileGame.Tiles
     {
         public string Name { get; protected set; }
 
-        public Node Node;
+        public Node Node { get; set; }
 
         public RectangleShape TileRect { get; set; }
 
@@ -27,6 +27,7 @@ namespace TileGame.Tiles
             TileRect = new RectangleShape();
             Behavior = behavior;
             TileRect.FillColor = rectColor;
+            Node = new Node(true, new Vector2f(0,0), 0,0);
         }
 
         protected Tile()
@@ -34,6 +35,7 @@ namespace TileGame.Tiles
             Name = "Default Tile";
             TileRect = new RectangleShape();
             Behavior = null;
+            Node = new Node(true, new Vector2f(0,0), 0,0);
         }
 
         public virtual void Tick()

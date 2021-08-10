@@ -1,11 +1,12 @@
 ﻿using System.Numerics;
+using SFML.System;
 
 namespace TileGame.Pathfinding
 {
     public class Node
     {
         public bool Walkable { get; set; }
-        public Vector2 WorldPosition { get; set; }
+        public Vector2f WorldPosition { get; set; }
         public int GridX { get; set; }
         public int GridY { get; set; }
 
@@ -17,7 +18,7 @@ namespace TileGame.Pathfinding
         public Node Parent;
 
 
-        public Node(bool walkable, Vector2 worldPos, int gridX, int gridY)
+        public Node(bool walkable, Vector2f worldPos, int gridX, int gridY)
         {
             Walkable = walkable;
             WorldPosition = worldPos;

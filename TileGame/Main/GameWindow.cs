@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using System.Numerics;
+using ImGuiNET;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
@@ -109,8 +110,12 @@ namespace TileGame.Main
                         view1.Size = new Vector2f(1000, 1000);
                     }
 
-                    if (ImGui.Button("Load Exercise 4"))
+                    if (ImGui.Button("Find Path"))
                     {
+                        Pathfinding.Pathfinding pf = new Pathfinding.Pathfinding();
+                        if (activeLevel != null)
+                            pf.FindPath(new Vector2(activeLevel.SpawnTile.Node.GridX, activeLevel.SpawnTile.Node.GridY),
+                                new Vector2(activeLevel.ExitTile.Node.GridX, activeLevel.ExitTile.Node.GridY));
                     }
 
                     ImGui.End();
@@ -149,7 +154,7 @@ namespace TileGame.Main
             string[] allowedTiles = new[] { "Grass" };
             string[] allowedBlockers = new[] { "Mountains" };
             TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
-            LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2u(32, 32),
+            LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2i(32, 32),
                 new Vector2f(16, 16));
             activeLevel = generator.GenerateLevel(levelTemplate, _generationSpeed);
         }

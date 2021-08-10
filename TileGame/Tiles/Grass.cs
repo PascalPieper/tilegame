@@ -22,6 +22,7 @@ namespace TileGame.Tiles
         {
             ResourceManager resourceManager = new ResourceManager();
             this.TileRect.Texture = resourceManager.LoadTexture("resources/grass.png");
+            Node.Walkable = true;
         }
         
     }

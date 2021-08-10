@@ -71,7 +71,7 @@ namespace TileGame.Pathfinding
         public List<Node> Path;
 
 
-        public Node NodeFromWorldPoint(Vector3 startPos)
+        public Node NodeFromWorldPoint(Vector2 startPos)
         {
             // float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
             // float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
@@ -80,8 +80,7 @@ namespace TileGame.Pathfinding
             //
             // int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
             // int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
-            // return grid[x, y];
-            throw new System.NotImplementedException();
+            return grid[(int)startPos.X, (int)startPos.Y];
         }
     }
 }

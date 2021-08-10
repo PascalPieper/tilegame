@@ -14,6 +14,7 @@ namespace TileGame.Tiles
         {
             ResourceManager resourceManager = new ResourceManager();
             TileRect.Texture = resourceManager.LoadTexture("resources/mountains.png");
+            this.Node.Walkable = false;
         }
     }
 }
