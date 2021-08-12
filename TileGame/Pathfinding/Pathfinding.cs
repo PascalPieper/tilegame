@@ -87,13 +87,9 @@ namespace TileGame.Pathfinding
         {
             int dstX = Math.Abs(nodeA.MatrixPosition.X - nodeB.MatrixPosition.X);
             int dstY = Math.Abs(nodeA.MatrixPosition.Y - nodeB.MatrixPosition.Y);
+            
+                return dstX + dstY;
 
-            if (dstX > dstY)
-            {
-                return 14 * dstY + 10 * (dstX - dstY);
-            }
-
-            return 14 * dstX + 10 * (dstY - dstX);
         }
 
         // public float NodeDiameter { get; private set; }
