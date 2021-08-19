@@ -15,6 +15,8 @@ namespace TileGame.Tiles
 
         public Node Node { get; set; }
 
+        protected string BaseTextureName { get; set; }
+
         public RectangleShape TileRect { get; set; }
 
         public uint Identifier => 0;
@@ -36,7 +38,6 @@ namespace TileGame.Tiles
             TileRect = new RectangleShape();
             Behavior = null;
             Node = new Node(true, new Vector2f(0,0), new Vector2i(0,0));
-            Node.GCost = 15;
         }
 
         public virtual void Tick()

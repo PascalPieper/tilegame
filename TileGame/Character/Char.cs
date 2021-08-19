@@ -5,6 +5,7 @@ namespace TileGame.Character
 {
     public class Char : IMove
     {
+        public bool CanMove { get; set; } = true;
         public bool MoveUp() => throw new NotImplementedException();
 
         public bool MoveDown() => throw new NotImplementedException();

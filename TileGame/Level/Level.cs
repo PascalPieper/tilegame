@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ImGuiNET;
 using SFML.System;
 using TileGame.Game;
 using TileGame.Interfaces;
@@ -38,7 +39,7 @@ namespace TileGame.Level
             LevelSize = levelSize;
             LevelQueueCreationSpeed = levelQueueCreationSpeed;
         }
-        
+
         public void DestroyAllTiles()
         {
             try
@@ -89,13 +90,32 @@ namespace TileGame.Level
             this.EmptyTiles = empty;
             return empty;
         }
-        
+
         public void Tick()
         {
         }
 
         public void Update()
         {
+            if (LevelGenerationQueue.Count == 0)
+            {
+                ImGui.Begin("Level Options");
+                {
+                    if (ImGui.Button("Find Spawn to Exit path"))
+                    {
+                        this.Pathfinding.FindPath(SpawnTile.Node.MatrixPosition, ExitTile.Node.MatrixPosition);
+                        var test = Pathfinding.Path;
+                        var resource = new ResourceManager();
+                        foreach (var node in test)
+                        {
+                            var tile = TileMatrix[node.MatrixPosition.X, node.MatrixPosition.Y];
+                            tile.TileRect.Texture = resource.LoadTexture("resources/a.png");
+                        }
+                    }
+                }
+            }
+
+            ImGui.End();
             for (int i = 0; i < LevelQueueCreationSpeed; i++)
             {
                 LevelGenerationQueue.TryDequeue(out var task);

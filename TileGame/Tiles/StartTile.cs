@@ -20,7 +20,8 @@ namespace TileGame.Tiles
         public StartTile()
         {
             ResourceManager resourceManager = new ResourceManager();
-            this.TileRect.Texture = resourceManager.LoadTexture("resources/spawnpoint.png");
+            BaseTextureName = "resources/spawnpoint.png"; 
+            this.TileRect.Texture = resourceManager.LoadTexture(BaseTextureName);
         }
     }
 }

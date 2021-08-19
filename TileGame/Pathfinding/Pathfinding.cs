@@ -87,9 +87,8 @@ namespace TileGame.Pathfinding
         {
             int dstX = Math.Abs(nodeA.MatrixPosition.X - nodeB.MatrixPosition.X);
             int dstY = Math.Abs(nodeA.MatrixPosition.Y - nodeB.MatrixPosition.Y);
-            
-                return dstX + dstY;
 
+            return dstX + dstY;
         }
 
         // public float NodeDiameter { get; private set; }
@@ -102,7 +101,7 @@ namespace TileGame.Pathfinding
             List<Node> neighbours = new List<Node>();
             int checkX = 0;
             int checkY = 0;
-            for (int x = -1; x < 1; x++)
+            for (int x = -1; x <= 1; x++)
             {
                 if (x != 0)
                 {
@@ -115,7 +114,7 @@ namespace TileGame.Pathfinding
                 }
             }
 
-            for (int y = -1; y < 1; y++)
+            for (int y = -1; y <= 1; y++)
             {
                 if (y != 0)
                 {
