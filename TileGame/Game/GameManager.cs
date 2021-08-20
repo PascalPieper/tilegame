@@ -42,19 +42,24 @@ namespace TileGame.Game
         {
             for (int index = _updatingGameObjects.Count; index > 0; index--)
             {
-                var item = _updatingGameObjects.ElementAt(index);
+                var item = _updatingGameObjects.ElementAt(index - 1);
                 item.Value.Update();
             }
         }
 
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo)
         {
-            
             _tickingGameObjects.Add(IdCount, tickingGo);
             _drawableGameObjects.Add(IdCount, drawableGo);
             IdCount++;
         }
-
+        public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo, IUpdate updateableGo)
+        {
+            _tickingGameObjects.Add(IdCount, tickingGo);
+            _drawableGameObjects.Add(IdCount, drawableGo);
+            _updatingGameObjects.Add(IdCount, updateableGo);
+            IdCount++;
+        }
         public void UnloadAllGameObjects()
         {
             foreach(KeyValuePair<uint, ITick> entry in _tickingGameObjects)

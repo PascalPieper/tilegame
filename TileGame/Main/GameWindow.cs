@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using ImGuiNET;
 using Microsoft.VisualBasic.CompilerServices;
 using Saffron2D.GuiCollection;
@@ -43,7 +44,6 @@ namespace TileGame.Main
             var gameManager = new GameManager();
             Level.Level activeLevel = null;
             var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
-            //LoadDefaultLevel(ref activeLevel, generator, _generationSpeed);
 
             // Start the game loop
             while (window.IsOpen)
@@ -55,57 +55,57 @@ namespace TileGame.Main
 
                 if (ImGui.Begin("Level Selection"))
                 {
+                    ImGui.Columns(2);
+                    ImGui.SetColumnWidth(0, 270);
+                    ImGui.SetColumnWidth(1, 100);
                     if (ImGui.SliderInt("Spawn Speed", ref _generationSpeed, 1, 15))
                     {
                     }
 
-                    ImGui.SliderInt("Map Horizontal Size", ref _mapsizeX, 1, 50);
-                    
-                    ImGui.SliderInt("Map Vertical Size", ref _mapsizeY, 1, 50);
-   
+                    ImGui.SliderInt("Map Size X", ref _mapsizeX, 6, 50);
+                    ImGui.SliderInt("Map Size Y", ref _mapsizeY, 6, 50);
+                    ImGui.NextColumn();
 
-                        if (ImGui.Button("Load Exercise 1a & 1b"))
+                    if (ImGui.Button("Load 1a & 1b"))
                     {
-                        
                         string[] allowedTiles = new[] { nameof(Grass) };
                         string[] allowedBlockers = new[] { nameof(Mountains) };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
                         string[] spawnableItems = new[] { nameof(Weapon), nameof(Armor), nameof(Ring) };
                         var itemAssembly = new ItemAssembly(spawnableItems);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2i(_mapsizeX, _mapsizeY),
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly,
+                            new Vector2i(_mapsizeX, _mapsizeY),
                             new Vector2f(16, 16), itemAssembly);
-                        LoadDefaultLevel(ref activeLevel, generator, _generationSpeed, levelTemplate);
+                        LoadDefaultLevel(gameManager, ref activeLevel, generator, _generationSpeed, levelTemplate);
                     }
 
-                    if (ImGui.Button("Load Exercise 1c"))
+                    if (ImGui.Button("Load 1c"))
                     {
                         string[] allowedTiles = new[] { nameof(Grass), nameof(PoisonSwamp) };
                         string[] allowedBlockers = new[] { nameof(Mountains) };
                         TileAssembly tileAssembly = new TileAssembly(allowedTiles, allowedBlockers);
                         string[] spawnableItems = new[] { nameof(Weapon), nameof(Armor), nameof(Ring) };
                         var itemAssembly = new ItemAssembly(spawnableItems);
-                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly, new Vector2i(_mapsizeX, _mapsizeY),
+                        LevelTemplate levelTemplate = new LevelTemplate(tileAssembly,
+                            new Vector2i(_mapsizeX, _mapsizeY),
                             new Vector2f(16, 16), itemAssembly);
-                        LoadDefaultLevel(ref activeLevel, generator, _generationSpeed, levelTemplate);
-                    }
-                    if (ImGui.Button("Load Exercise 2"))
-                    {
-                        activeLevel?.DestroyAllTiles();
+                        LoadDefaultLevel(gameManager, ref activeLevel, generator, _generationSpeed, levelTemplate);
                     }
 
-                    if (ImGui.Button("Load Exercise 3"))
+
+                    if (ImGui.Button("Load 3"))
                     {
                     }
 
-                    if (ImGui.Button("Load Exercise 4"))
+                    if (ImGui.Button("Load 4"))
                     {
                     }
 
-                    if (ImGui.Button("Load Exercise 5"))
+                    if (ImGui.Button("Load 5"))
                     {
                     }
 
-                    if (ImGui.Button("Load Exercise 5"))
+                    if (ImGui.Button("Load 5"))
                     {
                     }
 
@@ -125,24 +125,36 @@ namespace TileGame.Main
 
                 if (ImGui.Begin("Camera"))
                 {
+                    ImGui.Columns(2);
                     if (ImGui.Button("Increase Zoom"))
                     {
-                        view1.Size = new Vector2f(0, view1.Size.Y + 55);
+                        view1.Zoom(0.95f);
                     }
 
                     if (ImGui.Button("Decrease Zoom"))
                     {
-                        view1.Size = new Vector2f(view1.Size.X - 55, view1.Size.Y - 55);
+                        view1.Zoom(1.05f);
                     }
 
-                    if (ImGui.Button("Center Camera"))
+                    ImGui.NextColumn();
+                    if (ImGui.Button("Move Camera Right"))
                     {
-                        view1.Size = new Vector2f(1000, 1000);
+                        view1.Center = new Vector2f(view1.Center.X - 5, view1.Center.Y);
                     }
 
-                    if (ImGui.Button("Find Path"))
+                    if (ImGui.Button("Move Camera Left"))
                     {
+                        view1.Center = new Vector2f(view1.Center.X + 5, view1.Center.Y);
+                    }
 
+                    if (ImGui.Button("Move Camera Up"))
+                    {
+                        view1.Center = new Vector2f(view1.Center.X, view1.Center.Y - 5);
+                    }
+
+                    if (ImGui.Button("Move Camera Down"))
+                    {
+                        view1.Center = new Vector2f(view1.Center.X, view1.Center.Y + 5);
                     }
 
                     ImGui.End();
@@ -151,6 +163,7 @@ namespace TileGame.Main
                 #endregion
 
                 activeLevel?.Update();
+                gameManager.Update();
 
                 // Process events
                 window.SetView(view1);
@@ -171,10 +184,18 @@ namespace TileGame.Main
             {
                 window.Close();
             }
+
+            if (e.Code == SFML.Window.Keyboard.Key.Left || e.Code == SFML.Window.Keyboard.Key.A)
+            {
+                Console.WriteLine("Left");
+            }
         }
 
-        private void LoadDefaultLevel(ref Level.Level activeLevel, LevelGenerator generator, int generationSpeed, LevelTemplate template)
+        private void LoadDefaultLevel(GameManager gm, ref Level.Level activeLevel, LevelGenerator generator,
+            int generationSpeed,
+            LevelTemplate template)
         {
+            gm.UnloadAllGameObjects();
             activeLevel?.DestroyAllTiles();
             activeLevel = generator.GenerateLevel(template, _generationSpeed);
         }

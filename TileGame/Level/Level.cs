@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using ImGuiNET;
 using SFML.System;
+using TileGame.Character;
 using TileGame.Game;
 using TileGame.Interfaces;
 using TileGame.Pathfinding;
 using TileGame.Tiles;
-
+using TileGame.Character;
 namespace TileGame.Level
 {
     public class Level : ITick, IUpdate
@@ -16,6 +17,9 @@ namespace TileGame.Level
         public Tile ExitTile { get; set; }
         public List<Vector2i> EmptyTiles { get; set; }
         public Vector2i LevelSize { get; set; }
+        
+        public Character.Char ActivePlayer { get; set; }
+        
         private readonly GameManager _gameManager;
         public Pathfinding.Pathfinding Pathfinding { get; set; } = null;
 

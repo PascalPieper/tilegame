@@ -1,5 +1,6 @@
 ﻿
 using SFML.System;
+using TileGame.Character;
 using TileGame.Game;
 using TileGame.Items;
 using TileGame.Tiles;
@@ -35,6 +36,7 @@ namespace TileGame.Level
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
             PlaceEssentialTiles(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
             GenerateRandomTiles(template, level);
+            SpawnPlayer(level.SpawnTile.Node.MatrixPosition.X, level.SpawnTile.Node.MatrixPosition.Y, level);
             return level;
         }
 
@@ -46,7 +48,9 @@ namespace TileGame.Level
             level.Pathfinding = new Pathfinding.Pathfinding(level.TileMatrix);
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, assembly.BlockadeTiles[0], level);
             PlaceEssentialTiles(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
+
             GenerateRandomTiles(template, level);
+            SpawnPlayer(level.SpawnTile.Node.MatrixPosition.X, level.SpawnTile.Node.MatrixPosition.Y, level);
             return level;
         }
 
@@ -66,6 +70,19 @@ namespace TileGame.Level
             var result = level.FindEmptyTiles();
             var centerTile = RandomGenerator.RandomNumber(0, result.Count);
             return false;
+        }
+
+        public void SpawnPlayer(int xPos, int yPos, Level level)
+        {
+            level.LevelGenerationQueue.Enqueue(() =>
+            {
+                ItemInventory itemInventory = new ItemInventory(10);
+                var player = new Player(itemInventory);
+                level.ActivePlayer = player;
+                
+                _manager.AddGameObjectToLoop(player, player.Sprite, player);
+                player.Sprite.Position = new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
+            });
         }
 
         private void CreateSpawnPosition()
@@ -161,7 +178,7 @@ namespace TileGame.Level
 
             for (int i = 0; i < mapSizeY; i++)
             {
-                if (level.CheckTilePlaced(new Vector2i(mapSizeY - 1, i)))
+                if (level.CheckTilePlaced(new Vector2i(mapSizeX - 1, i)))
                 {
                     level.TileMatrix[mapSizeX - 1, i] = CreateTile(tileName, mapSizeX - 1, i);
                 }

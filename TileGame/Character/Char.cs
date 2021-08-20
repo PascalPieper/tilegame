@@ -1,17 +1,42 @@
 ﻿using System;
+using SFML.Graphics;
 using TileGame.Interfaces;
+using TileGame.Level;
 
 namespace TileGame.Character
 {
-    public class Char : IMove
+    public class Char : IUpdate, ITick
     {
+        public Char(ItemInventory itemInventory)
+        {
+            ItemInventory = itemInventory;
+        }
+
+        public uint Identifier { get; set; } = 0;
+        public ItemInventory ItemInventory { get; set; }
+        public int Strength { get; set; } = 0;
+        public float StrengthMulti { get; private set; } = 1.5f;
+        private float MaxWeight { get; set; }
+        public float CurrentWeight { get; private set; } = 0;
+
+        public Sprite Sprite { get; set; }
+
+        public virtual void Reconstruct()
+        {
+            MaxWeight = Strength * StrengthMulti;
+        }
+
         public bool CanMove { get; set; } = true;
-        public bool MoveUp() => throw new NotImplementedException();
 
-        public bool MoveDown() => throw new NotImplementedException();
+        public virtual void Update()
+        {
+            ItemInventory.Update();
+        }
 
-        public bool MoveLeft() => throw new NotImplementedException();
+        public virtual void Tick()
+        {
+        }
 
-        public bool MoveRight() => throw new NotImplementedException();
+        
     }
 }
