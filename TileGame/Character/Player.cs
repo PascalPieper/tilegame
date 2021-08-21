@@ -8,24 +8,28 @@ namespace TileGame.Character
 {
     public class Player : Char, IMove
     {
-        public bool CanMove { get; }
+        public bool CanMove { get; } = true;
         public bool MoveUp()
         {
+            this.Sprite.Position += new Vector2f(0, -8);
             return true;
         }
 
         public bool MoveDown()
         {
+            this.Sprite.Position += new Vector2f(0, 8);
             return true;
         }
 
         public bool MoveLeft()
         {
+            this.Sprite.Position += new Vector2f(-8, 0);
             return true;
         }
 
         public bool MoveRight()
         {
+            this.Sprite.Position += new Vector2f(8, 0);
             return true;
         }
 

@@ -2,6 +2,7 @@
 using SFML.Graphics;
 using TileGame.Interfaces;
 using TileGame.Level;
+using TileGame.Pathfinding;
 
 namespace TileGame.Character
 {
@@ -18,6 +19,7 @@ namespace TileGame.Character
         public float StrengthMulti { get; private set; } = 1.5f;
         private float MaxWeight { get; set; }
         public float CurrentWeight { get; private set; } = 0;
+        public Node OccupiedNode;
 
         public Sprite Sprite { get; set; }
 

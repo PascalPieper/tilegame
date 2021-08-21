@@ -5,6 +5,7 @@ using Microsoft.VisualBasic.CompilerServices;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 using TileGame.Game;
 using TileGame.Items;
 using TileGame.Level;
@@ -19,7 +20,8 @@ namespace TileGame.Main
         private int _generationSpeed = 15;
         private int _mapsizeX = 32;
         private int _mapsizeY = 32;
-
+        private View _activeview;
+        Level.Level activeLevel = null;
         public GameWindow()
         {
             this.deltaTimeClock = new Clock();
@@ -31,19 +33,22 @@ namespace TileGame.Main
             //Window Settings
             var mode = new SFML.Window.VideoMode(1920, 1080);
             View view1 = new View(new FloatRect(-120, -15, 512, 288));
+            _activeview = view1;
             //view1.Zoom(2);
             var window = new SFML.Graphics.RenderWindow(mode, "TileGame Portfolio");
             window.SetFramerateLimit(60);
+            window.SetKeyRepeatEnabled(true);
 
             //Setup for Input
             window.KeyPressed += this.Window_KeyPressed;
+            window.MouseWheelScrolled += this.Window_MousePressed;
             GuiImpl.Init(window);
             ImGui.LoadIniSettingsFromDisk("imgui.ini");
 
             //Instantiation of crucial Managers
             var gameManager = new GameManager();
-            Level.Level activeLevel = null;
-            var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
+
+            //var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
 
             // Start the game loop
             while (window.IsOpen)
@@ -76,7 +81,7 @@ namespace TileGame.Main
                         LevelTemplate levelTemplate = new LevelTemplate(tileAssembly,
                             new Vector2i(_mapsizeX, _mapsizeY),
                             new Vector2f(16, 16), itemAssembly);
-                        LoadDefaultLevel(gameManager, ref activeLevel, generator, _generationSpeed, levelTemplate);
+                        LoadDefaultLevel(gameManager, ref activeLevel, gameManager, _generationSpeed, levelTemplate);
                     }
 
                     if (ImGui.Button("Load 1c"))
@@ -89,7 +94,7 @@ namespace TileGame.Main
                         LevelTemplate levelTemplate = new LevelTemplate(tileAssembly,
                             new Vector2i(_mapsizeX, _mapsizeY),
                             new Vector2f(16, 16), itemAssembly);
-                        LoadDefaultLevel(gameManager, ref activeLevel, generator, _generationSpeed, levelTemplate);
+                        LoadDefaultLevel(gameManager, ref activeLevel, gameManager, _generationSpeed, levelTemplate);
                     }
 
 
@@ -105,8 +110,9 @@ namespace TileGame.Main
                     {
                     }
 
-                    if (ImGui.Button("Load 5"))
+                    if (ImGui.Button("Unload Current Level"))
                     {
+                        UnloadLevel(gameManager, ref activeLevel);
                     }
 
                     if (ImGui.Button("Tick"))
@@ -185,18 +191,61 @@ namespace TileGame.Main
                 window.Close();
             }
 
-            if (e.Code == SFML.Window.Keyboard.Key.Left || e.Code == SFML.Window.Keyboard.Key.A)
+            if (activeLevel != null && activeLevel.LevelGenerationQueue.Count == 0)
             {
-                Console.WriteLine("Left");
+                if (e.Code is SFML.Window.Keyboard.Key.Left or SFML.Window.Keyboard.Key.A)
+                {
+                    Console.WriteLine("Left");
+                    activeLevel.MovePlayerLeft();
+                }
+                if (e.Code is SFML.Window.Keyboard.Key.Right or SFML.Window.Keyboard.Key.D)
+                {
+                    Console.WriteLine("Right");
+                    activeLevel.MovePlayerRight();
+                }
+                if (e.Code is SFML.Window.Keyboard.Key.Up or SFML.Window.Keyboard.Key.W)
+                {
+                    Console.WriteLine("Up");
+                    activeLevel.MovePlayerUp();
+                }
+                if (e.Code is SFML.Window.Keyboard.Key.Down or SFML.Window.Keyboard.Key.S)
+                {
+                    Console.WriteLine("Down");
+                    activeLevel.MovePlayerDown();
+                }
             }
         }
 
-        private void LoadDefaultLevel(GameManager gm, ref Level.Level activeLevel, LevelGenerator generator,
+        private void Window_MousePressed(object sender, SFML.Window.MouseWheelScrollEventArgs s)
+        {
+            var window = (SFML.Window.Window)sender;
+            if (s.Wheel == SFML.Window.Mouse.Wheel.VerticalWheel)
+            {
+                if (s.Delta > 0)
+                {
+                    _activeview.Zoom(0.93f);
+                }
+                else
+                {
+                    _activeview.Zoom(1.08f);
+                }
+            }
+
+        }
+
+        private void UnloadLevel(GameManager gm, ref Level.Level activeLevel)
+        {
+            gm.UnloadAllGameObjects();
+            activeLevel?.DestroyAllTiles();
+        }
+
+        private void LoadDefaultLevel(GameManager gm, ref Level.Level activeLevel, GameManager gameManager,
             int generationSpeed,
             LevelTemplate template)
         {
             gm.UnloadAllGameObjects();
             activeLevel?.DestroyAllTiles();
+            var generator = new LevelGenerator(gameManager, new TileFactory(gameManager));
             activeLevel = generator.GenerateLevel(template, _generationSpeed);
         }
     }

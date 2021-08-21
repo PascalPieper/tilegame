@@ -20,7 +20,6 @@ namespace TileGame.Tiles
         {
             throw new System.NotImplementedException();
         }
-
-        public IOccupyTile OccupyingEntity { get; }
+        
     }
 }

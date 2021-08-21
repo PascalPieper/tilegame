@@ -11,7 +11,7 @@ namespace TileGame.Level
             _items = new List<T>(maxSlots);
         }
 
-        private int MaxSlots { get; set; }
+        protected int MaxSlots { get; set; }
 
         private List<T> _items;
 

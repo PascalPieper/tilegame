@@ -7,8 +7,6 @@ namespace TileGame.Tiles
 {
     public class StartTile : Tile, ITraversable
     {
-        public IOccupyTile OccupyingEntity { get; }
-
         public void OnEnter()
         {
         }

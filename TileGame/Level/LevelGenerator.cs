@@ -82,6 +82,7 @@ namespace TileGame.Level
                 
                 _manager.AddGameObjectToLoop(player, player.Sprite, player);
                 player.Sprite.Position = new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
+                player.OccupiedNode = level.TileMatrix[xPos, yPos].Node;
             });
         }
 

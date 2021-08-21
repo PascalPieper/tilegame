@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using System;
+using ImGuiNET;
 using TileGame.Interfaces;
 using TileGame.Items;
 
@@ -16,14 +17,30 @@ namespace TileGame.Level
         public void Update()
         {
             DisplayEquipSlot("Trousers", ArmorSlot);
-            DisplayEquipSlot("Weapon", ArmorSlot);
+            DisplayEquipSlot("Weapon", WeaponSlot);
             DisplayEquipSlot("Ring", RingSlot);
+            
+            for (int i = 0; i < MaxSlots; i++)
+            {
+                if (ImGui.Button("Equip Item " + i))
+                    {
+                        Console.WriteLine("test" + i);
+                    }
+                    if (ImGui.Button("Destroy Item " + i))
+                    {
+                        Console.WriteLine("test" + i);
+                    }
+            }
         }
 
         public void DisplayEquipSlot(string slotName, ItemBase item)
         {
             ImGui.Begin("Equipment");
-            ImGui.LabelText("slot", slotName);
+            if (ArmorSlot != null)
+            {
+                ImGui.LabelText(item.Name, item.Description);
+            }
+            
         }
     }
 }

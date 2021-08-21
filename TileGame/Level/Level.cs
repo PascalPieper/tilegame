@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using ImGuiNET;
 using SFML.System;
-using TileGame.Character;
 using TileGame.Game;
 using TileGame.Interfaces;
-using TileGame.Pathfinding;
 using TileGame.Tiles;
-using TileGame.Character;
+
 namespace TileGame.Level
 {
     public class Level : ITick, IUpdate
@@ -17,9 +15,9 @@ namespace TileGame.Level
         public Tile ExitTile { get; set; }
         public List<Vector2i> EmptyTiles { get; set; }
         public Vector2i LevelSize { get; set; }
-        
-        public Character.Char ActivePlayer { get; set; }
-        
+
+        public Character.Player ActivePlayer { get; set; }
+
         private readonly GameManager _gameManager;
         public Pathfinding.Pathfinding Pathfinding { get; set; } = null;
 
@@ -99,6 +97,62 @@ namespace TileGame.Level
         {
         }
 
+        public void MovePlayerRight()
+        {
+            if (ActivePlayer.CanMove)
+            {
+                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X + 1,
+                    ActivePlayer.OccupiedNode.MatrixPosition.Y];
+                if (target.Node.Walkable)
+                {
+                    ActivePlayer.OccupiedNode = target.Node;
+                    ActivePlayer.MoveRight();
+                }
+            }
+        }
+
+        public void MovePlayerLeft()
+        {
+            if (ActivePlayer.CanMove)
+            {
+                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X - 1,
+                    ActivePlayer.OccupiedNode.MatrixPosition.Y];
+                if (target.Node.Walkable)
+                {
+                    ActivePlayer.OccupiedNode = target.Node;
+                    ActivePlayer.MoveLeft();
+                }
+            }
+        }
+
+        public void MovePlayerUp()
+        {
+            if (ActivePlayer.CanMove)
+            {
+                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
+                    ActivePlayer.OccupiedNode.MatrixPosition.Y - 1];
+                if (target.Node.Walkable)
+                {
+                    ActivePlayer.OccupiedNode = target.Node;
+                    ActivePlayer.MoveUp();
+                }
+            }
+        }
+        
+        public void MovePlayerDown()
+        {
+            if (ActivePlayer.CanMove)
+            {
+                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
+                    ActivePlayer.OccupiedNode.MatrixPosition.Y + 1];
+                if (target.Node.Walkable)
+                {
+                    ActivePlayer.OccupiedNode = target.Node;
+                    ActivePlayer.MoveDown();
+                }
+            }
+        }
+
         public void Update()
         {
             if (LevelGenerationQueue.Count == 0)
@@ -120,10 +174,14 @@ namespace TileGame.Level
             }
 
             ImGui.End();
-            for (int i = 0; i < LevelQueueCreationSpeed; i++)
+
+            if (this.LevelGenerationQueue.Count > 0)
             {
-                LevelGenerationQueue.TryDequeue(out var task);
-                task?.Invoke();
+                for (int i = 0; i < LevelQueueCreationSpeed; i++)
+                {
+                    LevelGenerationQueue.TryDequeue(out var task);
+                    task?.Invoke();
+                }
             }
         }
     }

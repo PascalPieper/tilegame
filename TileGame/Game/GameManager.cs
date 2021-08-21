@@ -9,7 +9,7 @@ namespace TileGame.Game
 
     {
         private readonly Dictionary<uint, ITick> _tickingGameObjects;
-        private readonly Dictionary<uint, Drawable> _drawableGameObjects;
+        private readonly List<Drawable> _drawableGameObjects;
         private readonly Dictionary<uint, IUpdate> _updatingGameObjects;
 
         private uint IdCount { get; set; } = 0;
@@ -17,7 +17,7 @@ namespace TileGame.Game
         public GameManager()
         {
             _tickingGameObjects = new Dictionary<uint, ITick>();
-            _drawableGameObjects = new Dictionary<uint, Drawable>();
+            _drawableGameObjects = new List<Drawable>();
             _updatingGameObjects = new Dictionary<uint, IUpdate>();
         }
 
@@ -32,9 +32,12 @@ namespace TileGame.Game
 
         public void Draw(RenderWindow window)
         {
+            List<Drawable> orderedList;
+
+
             foreach (var entity in this._drawableGameObjects)
             {
-                window.Draw(entity.Value);
+                window.Draw(entity);
             }
         }
 
@@ -50,30 +53,34 @@ namespace TileGame.Game
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo)
         {
             _tickingGameObjects.Add(IdCount, tickingGo);
-            _drawableGameObjects.Add(IdCount, drawableGo);
+            _drawableGameObjects.Add(drawableGo);
             IdCount++;
         }
+
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo, IUpdate updateableGo)
         {
             _tickingGameObjects.Add(IdCount, tickingGo);
-            _drawableGameObjects.Add(IdCount, drawableGo);
+            _drawableGameObjects.Add(drawableGo);
+
             _updatingGameObjects.Add(IdCount, updateableGo);
             IdCount++;
         }
+
         public void UnloadAllGameObjects()
         {
-            foreach(KeyValuePair<uint, ITick> entry in _tickingGameObjects)
+            foreach (KeyValuePair<uint, ITick> entry in _tickingGameObjects)
             {
                 _tickingGameObjects.Remove(entry.Key);
             }
-            foreach(KeyValuePair<uint, Drawable> entry in _drawableGameObjects)
-            {
-                _drawableGameObjects.Remove(entry.Key);
-            }
+
+            _drawableGameObjects.Clear();
+
             foreach (KeyValuePair<uint, IUpdate> entry in _updatingGameObjects)
             {
                 _updatingGameObjects.Remove(entry.Key);
             }
+
+            IdCount = 0;
         }
     }
 }

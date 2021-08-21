@@ -11,6 +11,8 @@ namespace TileGame.Tiles
 {
     public abstract class Tile : ITick
     {
+        public uint Identifier => 0;
+
         public string Name { get; protected set; }
 
         public Node Node { get; set; }
@@ -18,8 +20,9 @@ namespace TileGame.Tiles
         protected string BaseTextureName { get; set; }
 
         public RectangleShape TileRect { get; set; }
+        
+        
 
-        public uint Identifier => 0;
 
         public CharacterEffectBehavior Behavior { get; protected set; }
 
@@ -29,7 +32,7 @@ namespace TileGame.Tiles
             TileRect = new RectangleShape();
             Behavior = behavior;
             TileRect.FillColor = rectColor;
-            Node = new Node(true, new Vector2f(0,0), new Vector2i(0,0));
+            Node = new Node(true, new Vector2f(0, 0), new Vector2i(0, 0));
         }
 
         protected Tile()
@@ -37,7 +40,7 @@ namespace TileGame.Tiles
             Name = "Default Tile";
             TileRect = new RectangleShape();
             Behavior = null;
-            Node = new Node(true, new Vector2f(0,0), new Vector2i(0,0));
+            Node = new Node(true, new Vector2f(0, 0), new Vector2i(0, 0));
         }
 
         public virtual void Tick()
