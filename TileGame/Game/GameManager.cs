@@ -56,6 +56,12 @@ namespace TileGame.Game
             _drawableGameObjects.Add(drawableGo);
             IdCount++;
         }
+        
+        public void AddGameObjectToLoop(Drawable drawableGo)
+        {
+            _drawableGameObjects.Add(drawableGo);
+            IdCount++;
+        }
 
         public void AddGameObjectToLoop(ITick tickingGo, Drawable drawableGo, IUpdate updateableGo)
         {

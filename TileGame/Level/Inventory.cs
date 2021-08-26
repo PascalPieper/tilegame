@@ -11,15 +11,17 @@ namespace TileGame.Level
             _items = new List<T>(maxSlots);
         }
 
-        protected int MaxSlots { get; set; }
+        public int MaxSlots { get; set; }
 
         private List<T> _items;
 
         public List<T> Items
         {
-            get { return _items; }
+            get => _items;
             set
             {
+                if (value.Count == 0)
+                    return;
                 if (value.Count > MaxSlots)
                 {
                     throw new Exception(this.GetType().Name +

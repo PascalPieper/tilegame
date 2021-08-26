@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using ImGuiNET;
+using SFML.Graphics;
 using SFML.System;
+using TileGame.Character;
 using TileGame.Game;
 using TileGame.Interfaces;
+using TileGame.Pathfinding;
 using TileGame.Tiles;
 
 namespace TileGame.Level
@@ -15,6 +18,8 @@ namespace TileGame.Level
         public Tile ExitTile { get; set; }
         public List<Vector2i> EmptyTiles { get; set; }
         public Vector2i LevelSize { get; set; }
+
+        private bool AutoPathFinding { get; set; } = false;
 
         public Character.Player ActivePlayer { get; set; }
 
@@ -97,16 +102,36 @@ namespace TileGame.Level
         {
         }
 
+        private bool TraverseCheck(Tile target)
+        {
+            if (target is ITraversable)
+            {
+                ActivePlayer.OccupiedNode = target.Node;
+                var traversable = target as ITraversable;
+                traversable.OnEnter();
+                target.Tick();
+                if (AutoPathFinding)
+                {
+                    VisualizePathfinder(target.Node, ExitTile.Node);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+
         public void MovePlayerRight()
         {
             if (ActivePlayer.CanMove)
             {
                 var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X + 1,
                     ActivePlayer.OccupiedNode.MatrixPosition.Y];
-                if (target.Node.Walkable)
+                if (TraverseCheck(target))
                 {
-                    ActivePlayer.OccupiedNode = target.Node;
                     ActivePlayer.MoveRight();
+                    CheckOccupantTile(target, ActivePlayer);
                 }
             }
         }
@@ -117,10 +142,10 @@ namespace TileGame.Level
             {
                 var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X - 1,
                     ActivePlayer.OccupiedNode.MatrixPosition.Y];
-                if (target.Node.Walkable)
+                if (TraverseCheck(target))
                 {
-                    ActivePlayer.OccupiedNode = target.Node;
                     ActivePlayer.MoveLeft();
+                    CheckOccupantTile(target, ActivePlayer);
                 }
             }
         }
@@ -131,25 +156,60 @@ namespace TileGame.Level
             {
                 var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
                     ActivePlayer.OccupiedNode.MatrixPosition.Y - 1];
-                if (target.Node.Walkable)
+                if (TraverseCheck(target))
                 {
-                    ActivePlayer.OccupiedNode = target.Node;
                     ActivePlayer.MoveUp();
+                    CheckOccupantTile(target, ActivePlayer);
                 }
             }
         }
-        
+
         public void MovePlayerDown()
         {
             if (ActivePlayer.CanMove)
             {
                 var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
                     ActivePlayer.OccupiedNode.MatrixPosition.Y + 1];
-                if (target.Node.Walkable)
+                if (TraverseCheck(target))
                 {
-                    ActivePlayer.OccupiedNode = target.Node;
                     ActivePlayer.MoveDown();
+                    CheckOccupantTile(target, ActivePlayer);
                 }
+            }
+        }
+
+        private void RemoveHighlights()
+        {
+            for (var i = 0; i < TileMatrix.GetLength(0); i++)
+            {
+                for (var j = 0; j < TileMatrix.GetLength(1); j++)
+                {
+                    TileMatrix[i, j].HighlightRect.FillColor = new Color(0, 0, 0, 0);
+                }
+            }
+        }
+
+        private void CheckOccupantTile(Tile tile, Player player)
+        {
+            if (tile.TreasureChest != null)
+            {
+                if (!tile.TreasureChest.IsUsed && ActivePlayer.ItemInventory.Items.Count < ActivePlayer.ItemInventory.MaxSlots)
+                {
+                    ActivePlayer.ItemInventory.AddItemToFront(tile.TreasureChest.Open());
+                }
+            }
+        }
+
+        private void VisualizePathfinder(Node startNode, Node endNode)
+        {
+            RemoveHighlights();
+            this.Pathfinding.FindPath(startNode.MatrixPosition, endNode.MatrixPosition);
+            var test = Pathfinding.Path;
+            var resource = new ResourceManager();
+            foreach (var node in test)
+            {
+                var tile = TileMatrix[node.MatrixPosition.X, node.MatrixPosition.Y];
+                tile.HighlightRect.FillColor = new Color(195, 0, 75, 125);
             }
         }
 
@@ -159,16 +219,19 @@ namespace TileGame.Level
             {
                 ImGui.Begin("Level Options");
                 {
+                    if (ImGui.Button("Place Items"))
+                    {
+                    }
+
                     if (ImGui.Button("Find Spawn to Exit path"))
                     {
-                        this.Pathfinding.FindPath(SpawnTile.Node.MatrixPosition, ExitTile.Node.MatrixPosition);
-                        var test = Pathfinding.Path;
-                        var resource = new ResourceManager();
-                        foreach (var node in test)
-                        {
-                            var tile = TileMatrix[node.MatrixPosition.X, node.MatrixPosition.Y];
-                            tile.TileRect.Texture = resource.LoadTexture("resources/a.png");
-                        }
+                        VisualizePathfinder(SpawnTile.Node, ExitTile.Node);
+                    }
+
+                    if (ImGui.Button("Enable / Disable Auto Pathfinding"))
+                    {
+                        RemoveHighlights();
+                        AutoPathFinding = !AutoPathFinding;
                     }
                 }
             }

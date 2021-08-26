@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Numerics;
 using ImGuiNET;
-using Microsoft.VisualBasic.CompilerServices;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 using TileGame.Game;
 using TileGame.Items;
 using TileGame.Level;
@@ -22,6 +19,7 @@ namespace TileGame.Main
         private int _mapsizeY = 32;
         private View _activeview;
         Level.Level activeLevel = null;
+
         public GameWindow()
         {
             this.deltaTimeClock = new Clock();
@@ -67,8 +65,8 @@ namespace TileGame.Main
                     {
                     }
 
-                    ImGui.SliderInt("Map Size X", ref _mapsizeX, 6, 50);
-                    ImGui.SliderInt("Map Size Y", ref _mapsizeY, 6, 50);
+                    ImGui.SliderInt("Map Size X", ref _mapsizeX, 2, 5000);
+                    ImGui.SliderInt("Map Size Y", ref _mapsizeY, 2, 5000);
                     ImGui.NextColumn();
 
                     if (ImGui.Button("Load 1a & 1b"))
@@ -145,12 +143,12 @@ namespace TileGame.Main
                     ImGui.NextColumn();
                     if (ImGui.Button("Move Camera Right"))
                     {
-                        view1.Center = new Vector2f(view1.Center.X - 5, view1.Center.Y);
+                        view1.Center = new Vector2f(view1.Center.X - 25, view1.Center.Y);
                     }
 
                     if (ImGui.Button("Move Camera Left"))
                     {
-                        view1.Center = new Vector2f(view1.Center.X + 5, view1.Center.Y);
+                        view1.Center = new Vector2f(view1.Center.X + 25, view1.Center.Y);
                     }
 
                     if (ImGui.Button("Move Camera Up"))
@@ -198,16 +196,19 @@ namespace TileGame.Main
                     Console.WriteLine("Left");
                     activeLevel.MovePlayerLeft();
                 }
+
                 if (e.Code is SFML.Window.Keyboard.Key.Right or SFML.Window.Keyboard.Key.D)
                 {
                     Console.WriteLine("Right");
                     activeLevel.MovePlayerRight();
                 }
+
                 if (e.Code is SFML.Window.Keyboard.Key.Up or SFML.Window.Keyboard.Key.W)
                 {
                     Console.WriteLine("Up");
                     activeLevel.MovePlayerUp();
                 }
+
                 if (e.Code is SFML.Window.Keyboard.Key.Down or SFML.Window.Keyboard.Key.S)
                 {
                     Console.WriteLine("Down");
@@ -230,7 +231,6 @@ namespace TileGame.Main
                     _activeview.Zoom(1.08f);
                 }
             }
-
         }
 
         private void UnloadLevel(GameManager gm, ref Level.Level activeLevel)

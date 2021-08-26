@@ -15,10 +15,13 @@ namespace TileGame.Character
 
         public uint Identifier { get; set; } = 0;
         public ItemInventory ItemInventory { get; set; }
+        protected const int StartStrength = 0;
+        protected const int StartMaxWeight = 5;
+        protected const int StartHealth = 100;
         public int Strength { get; set; } = 0;
         public float StrengthMulti { get; private set; } = 1.5f;
-        private float MaxWeight { get; set; }
-        public float CurrentWeight { get; private set; } = 0;
+        protected float MaxWeight { get; set; }
+        public float CurrentWeight { get; protected set; } = 0;
         public Node OccupiedNode;
 
         public Sprite Sprite { get; set; }

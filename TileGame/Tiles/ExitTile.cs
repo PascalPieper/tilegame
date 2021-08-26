@@ -1,4 +1,5 @@
-﻿using TileGame.Game;
+﻿using SFML.Graphics;
+using TileGame.Game;
 using TileGame.Interfaces;
 
 namespace TileGame.Tiles
@@ -13,12 +14,11 @@ namespace TileGame.Tiles
 
         public void OnEnter()
         {
-            throw new System.NotImplementedException();
+            this.HighlightRect.FillColor = Color.Transparent;
         }
 
         public void OnExit()
         {
-            throw new System.NotImplementedException();
         }
         
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using TileGame.Items;
 using TileGame.Tiles;
+using TileGame.Utility.Random;
 
 namespace TileGame.Game
 {
@@ -18,8 +19,9 @@ namespace TileGame.Game
             try
             {
                 var item = GetInstance(itemIdentifier);
-                item.Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/chest.png");
-                gameManager.AddGameObjectToLoop(item, item.Sprite);
+
+                item.Price = RandomGenerator.RandomNumber(0, 255);
+                item.Weight = RandomGenerator.RandomNumber(0.1f, 5);
                 return item;
             }
             catch (Exception e)
@@ -27,9 +29,9 @@ namespace TileGame.Game
                 Console.WriteLine("ERROR in [ItemFactory.cs] - Specified Tile Name: " + itemIdentifier +
                                   " does not exist as derived type - " + e.Message);
 
-                var tile = GetInstance(nameof(Grass));
-                gameManager.AddGameObjectToLoop(tile, tile.Sprite);
-                return tile;
+                var item = GetInstance(nameof(Ring));
+                //gameManager.AddGameObjectToLoop(item, item.Sprite);
+                return item;
             }
         }
     }

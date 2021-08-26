@@ -19,6 +19,7 @@ namespace TileGame.Game
             {
                 var tile = GetInstance(tileIdentifier);
                 gameManager.AddGameObjectToLoop(tile, tile.TileRect);
+                gameManager.AddGameObjectToLoop(tile.HighlightRect);
                 return tile;
             }
             catch (Exception e)
@@ -28,6 +29,8 @@ namespace TileGame.Game
                 
                 var tile = GetInstance(nameof(Grass));
                 gameManager.AddGameObjectToLoop(tile, tile.TileRect);
+
+
                 return tile;
             }
         }

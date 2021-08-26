@@ -4,6 +4,7 @@ using TileGame.Tiles.Behavior;
 using SFML.Graphics;
 using SFML.System;
 using TileGame.Interfaces;
+using TileGame.Level;
 using TileGame.Pathfinding;
 using Char = TileGame.Character.Char;
 
@@ -20,9 +21,9 @@ namespace TileGame.Tiles
         protected string BaseTextureName { get; set; }
 
         public RectangleShape TileRect { get; set; }
-        
-        
 
+        public RectangleShape HighlightRect { get; set; }
+        public TreasureChest TreasureChest { get; set; } = null;
 
         public CharacterEffectBehavior Behavior { get; protected set; }
 
@@ -38,7 +39,9 @@ namespace TileGame.Tiles
         protected Tile()
         {
             Name = "Default Tile";
+            HighlightRect = new RectangleShape();
             TileRect = new RectangleShape();
+            HighlightRect.FillColor = new Color(0, 0, 0, 0);
             Behavior = null;
             Node = new Node(true, new Vector2f(0, 0), new Vector2i(0, 0));
         }

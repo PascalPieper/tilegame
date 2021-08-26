@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 using SFML.System;
 using TileGame.Character;
 using TileGame.Game;
@@ -14,7 +15,7 @@ namespace TileGame.Level
         public uint Identifier { get; set; } = 0;
         private LevelTemplate LevelTemplate { get; set; }
         private TileFactory TileFactory { get; set; }
-        
+
         public LevelGenerator(GameManager manager, TileFactory tileFactory)
         {
             _manager = manager;
@@ -36,7 +37,9 @@ namespace TileGame.Level
             PlaceMapBarriers(template.MapSize.X, template.MapSize.Y, nameof(Mountains), level);
             PlaceEssentialTiles(template.MapSize.X, template.MapSize.Y, nameof(StartTile), level);
             GenerateRandomTiles(template, level);
+            PlaceItems(level, 0.05f);
             SpawnPlayer(level.SpawnTile.Node.MatrixPosition.X, level.SpawnTile.Node.MatrixPosition.Y, level);
+            
             return level;
         }
 
@@ -51,12 +54,16 @@ namespace TileGame.Level
 
             GenerateRandomTiles(template, level);
             SpawnPlayer(level.SpawnTile.Node.MatrixPosition.X, level.SpawnTile.Node.MatrixPosition.Y, level);
+            PlaceItems(level, 0.5f);
             return level;
         }
 
         private Tile CreateTile(string tileName, int xPos, int yPos)
         {
             var tile = TileFactory.CreateTile(tileName);
+            tile.HighlightRect.Position =
+                new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
+            tile.HighlightRect.Size = LevelTemplate.TileSize;
             tile.TileRect.Position = new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
             tile.TileRect.Size = LevelTemplate.TileSize;
             tile.Node.MatrixPosition = new Vector2i(xPos, yPos);
@@ -79,15 +86,57 @@ namespace TileGame.Level
                 ItemInventory itemInventory = new ItemInventory(10);
                 var player = new Player(itemInventory);
                 level.ActivePlayer = player;
-                
+
                 _manager.AddGameObjectToLoop(player, player.Sprite, player);
                 player.Sprite.Position = new Vector2f(xPos * LevelTemplate.TileSize.X, yPos * LevelTemplate.TileSize.Y);
                 player.OccupiedNode = level.TileMatrix[xPos, yPos].Node;
             });
         }
 
-        private void CreateSpawnPosition()
+        public void PlaceItems(Level level, float percentage)
         {
+            level.LevelGenerationQueue.Enqueue(() =>
+            {
+                var itemFactory = new ItemFactory(_manager);
+                var unoccupiedTiles = GetUnoccupiedTiles(level);
+                var itemAmount = (int)Math.Round((level.LevelSize.X * level.LevelSize.Y) * percentage);
+
+                for (int i = 0; i < itemAmount; i++)
+                {
+                    var rnd = RandomGenerator.RandomNumber(0, unoccupiedTiles.Count - 1);
+                    TreasureChest treasureChest = new TreasureChest();
+
+                    _manager.AddGameObjectToLoop(treasureChest.Sprite);
+                    treasureChest.Sprite.Position =
+                        new Vector2f((unoccupiedTiles[rnd].Node.MatrixPosition.X * LevelTemplate.TileSize.X),
+                            unoccupiedTiles[rnd].Node.MatrixPosition.Y * LevelTemplate.TileSize.Y);
+                    level.TileMatrix[unoccupiedTiles[rnd].Node.MatrixPosition.X,
+                        unoccupiedTiles[rnd].Node.MatrixPosition.Y].TreasureChest = treasureChest;
+
+                    var itemfactory = new ItemFactory(_manager);
+
+                    var item = itemfactory.CreateItem("Ring");
+                    treasureChest.HoldItem = item;
+                }
+            });
+        }
+
+
+        private List<Tile> GetUnoccupiedTiles(Level level)
+        {
+            var tiles = new List<Tile>();
+            for (int i = 0; i < level.LevelSize.X; i++)
+            {
+                for (int j = 0; j < level.LevelSize.Y; j++)
+                {
+                    if (level.TileMatrix[i, j] is IOccupiable)
+                    {
+                        tiles.Add(level.TileMatrix[i, j]);
+                    }
+                }
+            }
+
+            return tiles;
         }
 
         private void CreateEssentialTiles(int mapSizeX, int mapSizeY, string tileName, Level level)
@@ -131,7 +180,8 @@ namespace TileGame.Level
                             if (level.CheckTilePlaced(new Vector2i(xPos, yPos)))
                             {
                                 var tileIndex =
-                                    RandomGenerator.RandomNumber(0, template.TileAssembly.TraversableTiles.Length - 1);
+                                    RandomGenerator.RandomNumber(0,
+                                        template.TileAssembly.TraversableTiles.Length - 1);
 
                                 level.TileMatrix[xPos, yPos] =
                                     CreateTile(template.TileAssembly.TraversableTiles[tileIndex], xPos, yPos);
