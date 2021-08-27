@@ -1,39 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TileGame.Character
 {
-    public class Inventory<T>
+    public abstract class Inventory<T>
     {
-        private readonly int slotCount;
         private readonly T[] contents;
+        private readonly int slotCount;
 
         public Inventory(int slotCount)
         {
             this.slotCount = slotCount;
-            this.contents = new T [slotCount];
+            contents = new T [slotCount];
         }
 
         public bool SetContent(T entity, int slotNumber)
         {
-            if (this.contents.Length < slotNumber)
-            {
-                return false;
-            }
+            if (contents.Length < slotNumber) return false;
 
-            this.contents[slotNumber] = entity;
+            contents[slotNumber] = entity;
             return true;
         }
 
         public T GetContent(int slotNumber)
         {
-            if (this.slotCount == 0 || this.contents.Length < slotNumber)
-            {
-                throw new ArgumentException("Parameter cannot be null");
-            }
+            if (slotCount == 0 || contents.Length < slotNumber) throw new ArgumentException("Parameter cannot be null");
 
-            return this.contents[slotNumber];
+            return contents[slotNumber];
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using TileGame.Game;
 
 namespace TileGame.Level
 {
     public class Inventory<T>
     {
+        private readonly List<T> _items;
+
         public Inventory(int maxSlots)
         {
             MaxSlots = maxSlots;
@@ -12,8 +15,6 @@ namespace TileGame.Level
         }
 
         public int MaxSlots { get; set; }
-
-        private List<T> _items;
 
         public List<T> Items
         {
@@ -23,10 +24,8 @@ namespace TileGame.Level
                 if (value.Count == 0)
                     return;
                 if (value.Count > MaxSlots)
-                {
-                    throw new Exception(this.GetType().Name +
+                    throw new Exception(GetType().Name +
                                         " The passed List surpasses the maximum Item limit set be the MaxSlots variable.");
-                }
 
                 Items = value;
             }
@@ -44,6 +43,8 @@ namespace TileGame.Level
                 Items.Add(item);
                 return true;
             }
+
+            Notifier.SetMessage("There's no space left in the Inventory. Discard some Items first.");
 
             return false;
         }

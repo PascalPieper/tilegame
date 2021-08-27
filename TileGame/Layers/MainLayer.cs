@@ -1,24 +1,21 @@
-﻿using System.Numerics;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Saffron2D.Core;
 using Saffron2D.Graphics;
 using Saffron2D.GuiCollection;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using Time = SFML.System.Time;
-using Window = SFML.Window.Window;
 
 namespace TileGame.Layers
 {
     public class MainLayer : Layer
     {
         private Camera _camera;
-        private ControllableRenderTarget _target;
-        private Scene _scene;
 
         // Gui
         private DockSpace _dockSpace;
+        private Scene _scene;
+        private ControllableRenderTarget _target;
         private ViewportPane _viewportPane;
 
         public override void OnAttach()

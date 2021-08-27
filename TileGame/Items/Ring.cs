@@ -1,17 +1,16 @@
-﻿using System.Resources;
-using SFML.Graphics;
-using ResourceManager = TileGame.Game.ResourceManager;
-
-namespace TileGame.Items
+﻿namespace TileGame.Items
 {
-    class Ring : ItemBase
+    internal class Ring : ItemBase
     {
+        public Ring(string name, string description, double price, float weight, string textureName, int strengthBonus)
+            : base(name, description, price, weight, textureName, strengthBonus)
+        {
+        }
 
         public Ring()
         {
             Name = "Ring";
-            Sprite = new Sprite();
-            this.Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/exitpoint.png");
+            Description = "Ring made of an ancient red jewel.";
         }
     }
 }

@@ -2,17 +2,17 @@
 using System.Linq;
 using SFML.Graphics;
 using TileGame.Interfaces;
+using TileGame.Tiles;
 
 namespace TileGame.Game
 {
     public class GameManager
 
     {
-        private readonly Dictionary<uint, ITick> _tickingGameObjects;
         private readonly List<Drawable> _drawableGameObjects;
+        private readonly Dictionary<uint, ITick> _tickingGameObjects;
         private readonly Dictionary<uint, IUpdate> _updatingGameObjects;
-
-        private uint IdCount { get; set; } = 0;
+        public GameState GameState = GameState.Idle;
 
         public GameManager()
         {
@@ -21,9 +21,11 @@ namespace TileGame.Game
             _updatingGameObjects = new Dictionary<uint, IUpdate>();
         }
 
+        private uint IdCount { get; set; }
+
         public void Tick()
         {
-            for (int index = _tickingGameObjects.Count; index > 0; index--)
+            for (var index = _tickingGameObjects.Count; index > 0; index--)
             {
                 var item = _tickingGameObjects.ElementAt(index);
                 item.Value.Tick();
@@ -35,15 +37,12 @@ namespace TileGame.Game
             List<Drawable> orderedList;
 
 
-            foreach (var entity in this._drawableGameObjects)
-            {
-                window.Draw(entity);
-            }
+            foreach (var entity in _drawableGameObjects) window.Draw(entity);
         }
 
         public void Update()
         {
-            for (int index = _updatingGameObjects.Count; index > 0; index--)
+            for (var index = _updatingGameObjects.Count; index > 0; index--)
             {
                 var item = _updatingGameObjects.ElementAt(index - 1);
                 item.Value.Update();
@@ -56,7 +55,7 @@ namespace TileGame.Game
             _drawableGameObjects.Add(drawableGo);
             IdCount++;
         }
-        
+
         public void AddGameObjectToLoop(Drawable drawableGo)
         {
             _drawableGameObjects.Add(drawableGo);
@@ -74,17 +73,14 @@ namespace TileGame.Game
 
         public void UnloadAllGameObjects()
         {
-            foreach (KeyValuePair<uint, ITick> entry in _tickingGameObjects)
+            foreach (var entry in _tickingGameObjects)
             {
                 _tickingGameObjects.Remove(entry.Key);
             }
 
             _drawableGameObjects.Clear();
 
-            foreach (KeyValuePair<uint, IUpdate> entry in _updatingGameObjects)
-            {
-                _updatingGameObjects.Remove(entry.Key);
-            }
+            foreach (var entry in _updatingGameObjects) _updatingGameObjects.Remove(entry.Key);
 
             IdCount = 0;
         }

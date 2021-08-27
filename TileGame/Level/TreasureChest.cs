@@ -8,29 +8,29 @@ namespace TileGame.Level
 {
     public class TreasureChest : IOccupy
     {
-        public bool IsUsed { get; private set; } = false;
+        public TreasureChest()
+        {
+            Sprite = new Sprite();
+            Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/chest.png");
+            Sprite.Scale = new Vector2f(0.65f, 0.65f);
+        }
+
+        public bool IsUsed { get; private set; }
         public Sprite Sprite { get; set; }
 
         public ItemBase HoldItem { get; set; } = null;
 
-        public TreasureChest()
+        public void GiveItem(Player player)
         {
-            this.Sprite = new Sprite();
-            this.Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/chest.png");
-            Sprite.Scale = new Vector2f(0.65f, 0.65f);
+            player.ItemInventory.AddItemToFront(HoldItem);
         }
 
 
         public ItemBase Open()
         {
             IsUsed = true;
-            this.Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/chest_open.png");
+            Sprite.Texture = ResourceManager.Instance.LoadTexture("resources/chest_open.png");
             return HoldItem;
-        }
-
-        public void GiveItem(Player player)
-        {
-            player.ItemInventory.AddItemToFront(HoldItem);
         }
     }
 

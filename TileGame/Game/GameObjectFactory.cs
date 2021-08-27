@@ -7,12 +7,6 @@ namespace TileGame.Game
 {
     public class GameObjectFactory
     {
-        public GameObjectFactory()
-        {
-            //OnTickEntityCreation = new EventHandler<ITick>();
-
-        }
-
         public event EventHandler<ITick> OnTickEntityCreation;
         public event EventHandler<Drawable> OnDrawableEntityCreation;
 
@@ -20,8 +14,8 @@ namespace TileGame.Game
         {
             var newEntity = new T();
             newEntity.Position = spawnPosition;
-            this.OnTickEntityCreation?.Invoke(this, newEntity);
-            this.OnDrawableEntityCreation?.Invoke(this, newEntity);
+            OnTickEntityCreation?.Invoke(this, newEntity);
+            OnDrawableEntityCreation?.Invoke(this, newEntity);
             return newEntity;
         }
 

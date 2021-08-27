@@ -4,6 +4,8 @@ namespace TileGame.Tiles.Behavior
 {
     public abstract class CharacterEffectBehavior
     {
-        public virtual void TraverseEffect(Char character){}
+        public virtual void TraverseEffect(Char character)
+        {
+        }
     }
 }

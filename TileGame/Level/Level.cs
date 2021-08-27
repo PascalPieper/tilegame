@@ -8,61 +8,149 @@ using TileGame.Game;
 using TileGame.Interfaces;
 using TileGame.Pathfinding;
 using TileGame.Tiles;
+using TileGame.Utility.Random;
 
 namespace TileGame.Level
 {
     public class Level : ITick, IUpdate
     {
+        private readonly GameManager _gameManager;
+
+        public delegate void LevelTask();
+
+        public readonly Queue<LevelTask> LevelGenerationQueue = new();
+        public Pathfinding.Pathfinding PathfindingVisualizer { get; set; }
+        public Pathfinding.Pathfinding PathfindingWalker { get; set; }
         public Tile[,] TileMatrix { get; set; }
         public Tile SpawnTile { get; set; }
         public Tile ExitTile { get; set; }
         public List<Vector2i> EmptyTiles { get; set; }
         public Vector2i LevelSize { get; set; }
 
-        private bool AutoPathFinding { get; set; } = false;
+        private bool AutoPathFinding { get; set; }
+        public bool FindPathOnLoad { get; set; }
 
-        public Character.Player ActivePlayer { get; set; }
+        private Clock Clock { get; set; }
+        private bool AutoTraverse { get; set; } = false;
+        public Player ActivePlayer { get; set; }
 
-        private readonly GameManager _gameManager;
-        public Pathfinding.Pathfinding Pathfinding { get; set; } = null;
 
-        public delegate void LevelTask();
+        private delegate void UpdateHandler();
 
-        public readonly Queue<LevelTask> LevelGenerationQueue = new Queue<LevelTask>();
-        private int LevelQueueCreationSpeed { get; set; }
+        private UpdateHandler _updateBehavior;
+        public readonly PlayerMoveController PlayerMoveController;
+
+        private int LevelQueueCreationSpeed { get; }
         public uint Identifier { get; set; } = 0;
-
 
         public Level(GameManager gameManager, Vector2i levelSize)
         {
-            this._gameManager = gameManager;
+            PlayerMoveController = new PlayerMoveController(this);
+            _gameManager = gameManager;
             LevelSize = levelSize;
             LevelQueueCreationSpeed = 10;
+            _updateBehavior = Tick;
+            Clock = new Clock();
         }
+
 
         public Level(GameManager gameManager, Vector2i levelSize, int levelQueueCreationSpeed)
         {
-            this._gameManager = gameManager;
+            PlayerMoveController = new PlayerMoveController(this);
+            _gameManager = gameManager;
             LevelSize = levelSize;
             LevelQueueCreationSpeed = levelQueueCreationSpeed;
+            _updateBehavior = ProduceLevelBehavior;
+            Clock = new Clock();
+        }
+
+        public void Tick()
+        {
+        }
+
+        private void LevelOptionsBehavior()
+        {
+            if (LevelGenerationQueue.Count == 0)
+            {
+                ImGui.Begin("Level Options");
+                {
+                    if (ImGui.Button("Find Spawn to Exit path"))
+                        VisualizePathfinder(SpawnTile.Node, ExitTile.Node);
+
+                    if (ActivePlayer != null)
+                    {
+                        if (ImGui.Button("Toggle Pathfinding Visualization"))
+                        {
+                            RemoveHighlights();
+                            VisualizePathfinder(ActivePlayer.OccupiedNode, ExitTile.Node);
+                            AutoPathFinding = !AutoPathFinding;
+                        }
+
+                        if (ImGui.Button("Start Auto Pathfinding"))
+                        {
+                            RemoveHighlights();
+                            AutoPathFinding = true;
+                            AutoTraverse = !AutoTraverse;
+                        }
+                    }
+
+                    ImGui.End();
+                }
+            }
+
+            if (AutoTraverse)
+            {
+                AutoFindPath(ExitTile.Node);
+            }
+        }
+
+
+        private void ProduceLevelBehavior()
+        {
+            if (LevelGenerationQueue.Count > 0)
+                for (var i = 0; i < LevelQueueCreationSpeed; i++)
+                {
+                    LevelGenerationQueue.TryDequeue(out var task);
+                    task?.Invoke();
+                }
+            else
+            {
+                OnLevelLoadFinished();
+            }
+        }
+
+        public void GenerateRandomLevelItem(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                var chance = RandomGenerator.RandomNumber(0, 2);
+                var itemfactory = new ItemFactory();
+                var item = chance switch
+                {
+                    0 => itemfactory.CreateItem("Ring"),
+                    1 => itemfactory.CreateItem("Armor"),
+                    2 => itemfactory.CreateItem("Weapon"),
+                    _ => itemfactory.CreateItem("Ring")
+                };
+                ActivePlayer.ItemInventory.AddItemToFront(item);
+            }
+        }
+
+
+        public void Update()
+        {
+            _updateBehavior.Invoke();
         }
 
         public void DestroyAllTiles()
         {
             try
             {
-                if (this.TileMatrix == null)
-                {
-                    return;
-                }
+                if (TileMatrix == null) return;
 
                 for (var i = 0; i < TileMatrix.GetLength(0); i++)
-                {
-                    for (var j = 0; j < TileMatrix.GetLength(1); j++)
-                    {
-                        TileMatrix[i, j] = null;
-                    }
-                }
+                for (var j = 0; j < TileMatrix.GetLength(1); j++)
+                    TileMatrix[i, j].Dispose();
 
                 _gameManager.UnloadAllGameObjects();
             }
@@ -82,169 +170,114 @@ namespace TileGame.Level
         {
             EmptyTiles.Clear();
             var empty = new List<Vector2i>();
-            for (int i = 0; i < this.TileMatrix.GetLength(0); i++)
+            for (var i = 0; i < TileMatrix.GetLength(0); i++)
+            for (var j = 0; j < TileMatrix.GetLength(1); j++)
             {
-                for (int j = 0; j < this.TileMatrix.GetLength(1); j++)
-                {
-                    var tempPosition = new Vector2i(i, j);
-                    if (CheckTilePlaced(tempPosition))
-                    {
-                        empty.Add(tempPosition);
-                    }
-                }
+                var tempPosition = new Vector2i(i, j);
+                if (CheckTilePlaced(tempPosition)) empty.Add(tempPosition);
             }
 
-            this.EmptyTiles = empty;
+            EmptyTiles = empty;
             return empty;
         }
 
-        public void Tick()
+        public bool TraverseCheck(Tile target)
         {
+            if (target is not ITraversable) return false;
+            ActivePlayer.OccupiedNode = target.Node;
+            var traversable = target as ITraversable;
+            traversable.OnEnter(ActivePlayer);
+            target.Tick();
+            if (AutoPathFinding) VisualizePathfinder(target.Node, ExitTile.Node);
+
+            return true;
         }
 
-        private bool TraverseCheck(Tile target)
-        {
-            if (target is ITraversable)
-            {
-                ActivePlayer.OccupiedNode = target.Node;
-                var traversable = target as ITraversable;
-                traversable.OnEnter();
-                target.Tick();
-                if (AutoPathFinding)
-                {
-                    VisualizePathfinder(target.Node, ExitTile.Node);
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-
-        public void MovePlayerRight()
-        {
-            if (ActivePlayer.CanMove)
-            {
-                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X + 1,
-                    ActivePlayer.OccupiedNode.MatrixPosition.Y];
-                if (TraverseCheck(target))
-                {
-                    ActivePlayer.MoveRight();
-                    CheckOccupantTile(target, ActivePlayer);
-                }
-            }
-        }
-
-        public void MovePlayerLeft()
-        {
-            if (ActivePlayer.CanMove)
-            {
-                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X - 1,
-                    ActivePlayer.OccupiedNode.MatrixPosition.Y];
-                if (TraverseCheck(target))
-                {
-                    ActivePlayer.MoveLeft();
-                    CheckOccupantTile(target, ActivePlayer);
-                }
-            }
-        }
-
-        public void MovePlayerUp()
-        {
-            if (ActivePlayer.CanMove)
-            {
-                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
-                    ActivePlayer.OccupiedNode.MatrixPosition.Y - 1];
-                if (TraverseCheck(target))
-                {
-                    ActivePlayer.MoveUp();
-                    CheckOccupantTile(target, ActivePlayer);
-                }
-            }
-        }
-
-        public void MovePlayerDown()
-        {
-            if (ActivePlayer.CanMove)
-            {
-                var target = this.TileMatrix[ActivePlayer.OccupiedNode.MatrixPosition.X,
-                    ActivePlayer.OccupiedNode.MatrixPosition.Y + 1];
-                if (TraverseCheck(target))
-                {
-                    ActivePlayer.MoveDown();
-                    CheckOccupantTile(target, ActivePlayer);
-                }
-            }
-        }
 
         private void RemoveHighlights()
         {
             for (var i = 0; i < TileMatrix.GetLength(0); i++)
-            {
-                for (var j = 0; j < TileMatrix.GetLength(1); j++)
-                {
-                    TileMatrix[i, j].HighlightRect.FillColor = new Color(0, 0, 0, 0);
-                }
-            }
+            for (var j = 0; j < TileMatrix.GetLength(1); j++)
+                TileMatrix[i, j].HighlightRect.FillColor = new Color(0, 0, 0, 0);
         }
 
-        private void CheckOccupantTile(Tile tile, Player player)
+        public void CheckOccupantTile(Tile tile, Player player)
         {
             if (tile.TreasureChest != null)
-            {
-                if (!tile.TreasureChest.IsUsed && ActivePlayer.ItemInventory.Items.Count < ActivePlayer.ItemInventory.MaxSlots)
+                if (!tile.TreasureChest.IsUsed &&
+                    player.ItemInventory.Items.Count < player.ItemInventory.MaxSlots)
                 {
-                    ActivePlayer.ItemInventory.AddItemToFront(tile.TreasureChest.Open());
+                    player.ItemInventory.AddItemToFront(tile.TreasureChest.Open());
+                    player.Validate();
                 }
-            }
         }
 
         private void VisualizePathfinder(Node startNode, Node endNode)
         {
             RemoveHighlights();
-            this.Pathfinding.FindPath(startNode.MatrixPosition, endNode.MatrixPosition);
-            var test = Pathfinding.Path;
-            var resource = new ResourceManager();
-            foreach (var node in test)
+            PathfindingVisualizer.FindPath(startNode.MatrixPosition, endNode.MatrixPosition);
+            var path = PathfindingVisualizer.Path;
+            foreach (var node in path)
             {
                 var tile = TileMatrix[node.MatrixPosition.X, node.MatrixPosition.Y];
                 tile.HighlightRect.FillColor = new Color(195, 0, 75, 125);
             }
         }
 
-        public void Update()
+        private void AutoFindPath(Node endNode)
         {
-            if (LevelGenerationQueue.Count == 0)
+            // VisualizePathfinder(ActivePlayer.OccupiedNode, ExitTile.Node);
+            PathfindingWalker.FindPath(ActivePlayer.OccupiedNode.MatrixPosition, endNode.MatrixPosition);
+
+            if (!AutoTraverse || PathfindingWalker.Path.Count == 0 && PathfindingWalker.Path != null)
             {
-                ImGui.Begin("Level Options");
-                {
-                    if (ImGui.Button("Place Items"))
-                    {
-                    }
-
-                    if (ImGui.Button("Find Spawn to Exit path"))
-                    {
-                        VisualizePathfinder(SpawnTile.Node, ExitTile.Node);
-                    }
-
-                    if (ImGui.Button("Enable / Disable Auto Pathfinding"))
-                    {
-                        RemoveHighlights();
-                        AutoPathFinding = !AutoPathFinding;
-                    }
-                }
+                AutoTraverse = false;
+                AutoPathFinding = false;
+                return;
             }
 
-            ImGui.End();
-
-            if (this.LevelGenerationQueue.Count > 0)
+            if (Clock.ElapsedTime.AsMilliseconds() >= 100)
             {
-                for (int i = 0; i < LevelQueueCreationSpeed; i++)
+                if (PathfindingWalker.Path[0].MatrixPosition.X < ActivePlayer.OccupiedNode.MatrixPosition.X)
                 {
-                    LevelGenerationQueue.TryDequeue(out var task);
-                    task?.Invoke();
+                    PlayerMoveController.MovePlayerLeft();
                 }
+
+                else if (PathfindingWalker.Path[0].MatrixPosition.X > ActivePlayer.OccupiedNode.MatrixPosition.X)
+                {
+                    PlayerMoveController.MovePlayerRight();
+                }
+
+                else if (PathfindingWalker.Path[0].MatrixPosition.Y < ActivePlayer.OccupiedNode.MatrixPosition.Y)
+                {
+                    PlayerMoveController.MovePlayerUp();
+                }
+                else if (PathfindingWalker.Path[0].MatrixPosition.Y > ActivePlayer.OccupiedNode.MatrixPosition.Y)
+                {
+                    PlayerMoveController.MovePlayerDown();
+                }
+
+                PathfindingWalker.Path.Remove(PathfindingWalker.Path[0]);
+                Clock.Restart();
+            }
+        }
+
+        private void OnPlayerDeath()
+        {
+            _gameManager.GameState = GameState.Idle;
+        }
+
+        void OnLevelLoadFinished()
+        {
+            if (ActivePlayer != null)
+            {
+                ActivePlayer.PlayerDeathEvent += OnPlayerDeath;
+            }
+
+            _updateBehavior = LevelOptionsBehavior;
+            if (FindPathOnLoad)
+            {
+                VisualizePathfinder(SpawnTile.Node, ExitTile.Node);
             }
         }
     }

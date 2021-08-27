@@ -1,20 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using SFML.Graphics;
-using SFML.Graphics.Glsl;
-using TileGame.Game;
-using TileGame.Tiles;
+﻿using TileGame.Game;
 
 namespace TileGame.Tiles
 {
-    class Mountains : Tile
+    internal class Mountains : Tile
     {
         public Mountains()
         {
-            ResourceManager resourceManager = new ResourceManager();
-            TileRect.Texture = resourceManager.LoadTexture("resources/mountains.png");
-            this.Node.Walkable = false;
+            TileRect.Texture = ResourceManager.Instance.LoadTexture("resources/mountains.png");
+            Node.Walkable = false;
         }
     }
 }

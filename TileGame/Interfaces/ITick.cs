@@ -2,7 +2,7 @@
 {
     public interface ITick
     {
-        void Tick();
         uint Identifier { get; }
+        void Tick();
     }
 }

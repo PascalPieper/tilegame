@@ -8,7 +8,7 @@
             BlockadeTiles = blockadeTiles;
         }
 
-        public string[] TraversableTiles { get; private set; }
-        public string[] BlockadeTiles { get; private set; }
+        public string[] TraversableTiles { get; }
+        public string[] BlockadeTiles { get; }
     }
 }

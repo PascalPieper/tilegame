@@ -18,15 +18,14 @@ namespace TileGame.Level
         {
             TileAssembly = tileAssembly;
             MapSize = mapSize;
-            TileSize = tileSize;
-            ItemAssembly = new ItemAssembly(null);
+            TileSize = tileSize; ;
         }
-        
-        public TileAssembly TileAssembly { get; private set; }
 
-        public ItemAssembly ItemAssembly { get; private set; }
-        
-        public Vector2i MapSize { get; private set; }
-        public Vector2f TileSize { get; private set; }
+        public TileAssembly TileAssembly { get; }
+
+        public ItemAssembly ItemAssembly { get; }
+
+        public Vector2i MapSize { get; }
+        public Vector2f TileSize { get; }
     }
 }

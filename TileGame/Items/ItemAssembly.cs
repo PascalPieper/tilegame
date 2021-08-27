@@ -2,11 +2,18 @@
 {
     public struct ItemAssembly
     {
-        public ItemAssembly(string[] spawnableItems)
+        public ItemAssembly(string[] spawnableItems, float spawnFrequency, bool spawnPlayerWithItems, int playerStartItemAmount)
         {
             SpawnableItems = spawnableItems;
+            SpawnFrequency = spawnFrequency;
+            SpawnPlayerWithItems = spawnPlayerWithItems;
+            PlayerStartItemAmount = playerStartItemAmount;
         }
 
-        public string[] SpawnableItems { get; private set; }
+        public string[] SpawnableItems { get; }
+        public float SpawnFrequency { get; }
+        
+        public bool SpawnPlayerWithItems { get; }
+        public int PlayerStartItemAmount { get; }
     }
 }

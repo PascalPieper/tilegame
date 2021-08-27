@@ -1,5 +1,4 @@
 ﻿using System;
-using TileGame.Game;
 using TileGame.Tiles;
 
 namespace TileGame.Game
@@ -26,7 +25,7 @@ namespace TileGame.Game
             {
                 Console.WriteLine("ERROR in [TileFactory.cs] - Specified Tile Name: " + tileIdentifier +
                                   " does not exist as derived type - " + e.Message);
-                
+
                 var tile = GetInstance(nameof(Grass));
                 gameManager.AddGameObjectToLoop(tile, tile.TileRect);
 

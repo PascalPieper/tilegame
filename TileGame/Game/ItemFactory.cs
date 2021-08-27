@@ -1,17 +1,20 @@
 ﻿using System;
 using TileGame.Items;
-using TileGame.Tiles;
 using TileGame.Utility.Random;
 
 namespace TileGame.Game
 {
-    class ItemFactory : ReflectFactory<ItemBase>
+    internal class ItemFactory : ReflectFactory<ItemBase>
     {
-        public GameManager gameManager;
+        public GameManager GameManager;
 
         public ItemFactory(GameManager gameManager)
         {
-            this.gameManager = gameManager;
+            GameManager = gameManager;
+        }
+        public ItemFactory()
+        {
+            
         }
 
         public ItemBase CreateItem(string itemIdentifier)
@@ -22,6 +25,7 @@ namespace TileGame.Game
 
                 item.Price = RandomGenerator.RandomNumber(0, 255);
                 item.Weight = RandomGenerator.RandomNumber(0.1f, 5);
+                item.StrengthBonus = RandomGenerator.RandomNumber(1, 5);
                 return item;
             }
             catch (Exception e)

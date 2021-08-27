@@ -1,5 +1,4 @@
-﻿using TileGame.Tiles.Behavior;
-using SFML.Graphics;
+﻿using TileGame.Character;
 using TileGame.Game;
 using TileGame.Interfaces;
 
@@ -7,19 +6,17 @@ namespace TileGame.Tiles
 {
     public class StartTile : Tile, ITraversable
     {
-        public void OnEnter()
+        public StartTile()
+        {
+            TileRect.Texture = ResourceManager.Instance.LoadTexture("resources/spawnpoint.png");
+        }
+
+        public void OnEnter(Player player)
         {
         }
 
         public void OnExit()
         {
-        }
-
-        public StartTile()
-        {
-            ResourceManager resourceManager = new ResourceManager();
-            BaseTextureName = "resources/spawnpoint.png"; 
-            this.TileRect.Texture = resourceManager.LoadTexture(BaseTextureName);
         }
     }
 }

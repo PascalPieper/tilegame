@@ -4,7 +4,5 @@
     {
         int Health { get; }
         void TakeDamage(int amount);
-        void OnDeath();
-
     }
 }
